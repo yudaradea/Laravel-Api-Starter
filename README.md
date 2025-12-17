@@ -4,25 +4,25 @@ Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, dan 
 
 ## 📦 Tech Stack
 
-- **Laravel**: 12.x
-- **PHP**: 8.2+
-- **Authentication**: Laravel Sanctum
-- **Authorization**: Spatie Laravel Permission
-- **Architecture**: Repository Pattern
-- **UUID**: Primary Key
+-   **Laravel**: 12.x
+-   **PHP**: 8.2+
+-   **Authentication**: Laravel Sanctum
+-   **Authorization**: Spatie Laravel Permission
+-   **Architecture**: Repository Pattern
+-   **UUID**: Primary Key
 
 ## ✨ Features
 
-- ✅ Authentication (Login, Register, Logout, Me)
-- ✅ Role & Permission Management (Spatie)
-- ✅ Repository Pattern
-- ✅ UUID as Primary Key
-- ✅ Soft Deletes
-- ✅ API Resources & Pagination
-- ✅ Form Request Validation
-- ✅ Standardized API Response
-- ✅ Search Functionality
-- ✅ CORS Configuration
+-   ✅ Authentication (Login, Register, Logout, Me)
+-   ✅ Role & Permission Management (Spatie)
+-   ✅ Repository Pattern
+-   ✅ UUID as Primary Key
+-   ✅ Soft Deletes
+-   ✅ API Resources & Pagination
+-   ✅ Form Request Validation
+-   ✅ Standardized API Response
+-   ✅ Search Functionality
+-   ✅ CORS Configuration
 
 ## 🏗️ Project Structure
 
@@ -56,18 +56,21 @@ app/
 ## 📥 Installation
 
 ### 1. Install Laravel
+
 ```bash
 composer create-project laravel/laravel project-name
 cd project-name
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 composer require laravel/sanctum
 composer require spatie/laravel-permission
 ```
 
 ### 3. Copy Files
+
 Copy semua file dari starter pack ke project Laravel Anda:
 
 ```bash
@@ -114,6 +117,7 @@ cp routes/api.php your-project/routes/
 ```
 
 ### 4. Update bootstrap/app.php (PENTING!)
+
 **Laravel 12 tidak auto-load API routes!** Update `bootstrap/app.php`:
 
 ```php
@@ -147,6 +151,7 @@ return Application::configure(basePath: dirname(__DIR__))
 ```
 
 ### 5. Update bootstrap/providers.php
+
 Tambahkan provider di `bootstrap/providers.php`:
 
 ```php
@@ -157,6 +162,7 @@ return [
 ```
 
 ### 6. Environment Setup
+
 Update `.env`:
 
 ```env
@@ -172,11 +178,13 @@ DB_PASSWORD=
 ```
 
 ### 7. Run Migrations & Seeders
+
 ```bash
 php artisan migrate:fresh --seed
 ```
 
 ### 8. Generate Application Key
+
 ```bash
 php artisan key:generate
 ```
@@ -184,39 +192,44 @@ php artisan key:generate
 ## 🔑 Default Credentials
 
 ### Super Admin
-- Email: `admin@example.com`
-- Password: `password`
+
+-   Email: `admin@example.com`
+-   Password: `password`
 
 ### Admin
-- Email: `user@example.com`
-- Password: `password`
+
+-   Email: `user@example.com`
+-   Password: `password`
 
 ## 📡 API Endpoints
 
 **📖 Untuk cara protect routes dengan role/permission, lihat [MIDDLEWARE.md](MIDDLEWARE.md)**
 
 ### Authentication
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/login` | Login user | No |
-| POST | `/api/register` | Register new user | No |
-| POST | `/api/logout` | Logout user | Yes |
-| GET | `/api/me` | Get current user | Yes |
+
+| Method | Endpoint        | Description       | Auth Required |
+| ------ | --------------- | ----------------- | ------------- |
+| POST   | `/api/login`    | Login user        | No            |
+| POST   | `/api/register` | Register new user | No            |
+| POST   | `/api/logout`   | Logout user       | Yes           |
+| GET    | `/api/me`       | Get current user  | Yes           |
 
 ### User Management
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/user` | Get all users | Yes |
-| GET | `/api/user/all/paginated` | Get paginated users | Yes |
-| GET | `/api/user/{id}` | Get user detail | Yes |
-| POST | `/api/user` | Create user | Yes |
-| PUT | `/api/user/{id}` | Update user | Yes |
-| DELETE | `/api/user/{id}` | Delete user | Yes |
-| PUT | `/api/user/{id}/update-password` | Update password | Yes |
+
+| Method | Endpoint                         | Description         | Auth Required |
+| ------ | -------------------------------- | ------------------- | ------------- |
+| GET    | `/api/user`                      | Get all users       | Yes           |
+| GET    | `/api/user/all/paginated`        | Get paginated users | Yes           |
+| GET    | `/api/user/{id}`                 | Get user detail     | Yes           |
+| POST   | `/api/user`                      | Create user         | Yes           |
+| PUT    | `/api/user/{id}`                 | Update user         | Yes           |
+| DELETE | `/api/user/{id}`                 | Delete user         | Yes           |
+| PUT    | `/api/user/{id}/update-password` | Update password     | Yes           |
 
 ## 🧪 Testing API
 
 ### 1. Login
+
 ```bash
 curl -X POST http://localhost:8000/api/login \
   -H "Content-Type: application/json" \
@@ -227,24 +240,27 @@ curl -X POST http://localhost:8000/api/login \
 ```
 
 Response:
+
 ```json
 {
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "access_token": "your-token-here",
-    "token_type": "Bearer"
-  }
+    "success": true,
+    "message": "Login successful",
+    "data": {
+        "access_token": "your-token-here",
+        "token_type": "Bearer"
+    }
 }
 ```
 
 ### 2. Get Current User
+
 ```bash
 curl -X GET http://localhost:8000/api/me \
   -H "Authorization: Bearer your-token-here"
 ```
 
 ### 3. Get All Users (Paginated)
+
 ```bash
 curl -X GET "http://localhost:8000/api/user/all/paginated?search=admin&per_page=10&page=1" \
   -H "Authorization: Bearer your-token-here"
@@ -253,16 +269,19 @@ curl -X GET "http://localhost:8000/api/user/all/paginated?search=admin&per_page=
 ## 🔨 How to Add New Module
 
 ### 1. Create Migration
+
 ```bash
 php artisan make:migration create_products_table
 ```
 
 ### 2. Create Model
+
 ```bash
 php artisan make:model Product
 ```
 
 Add UUID trait dan soft deletes:
+
 ```php
 <?php
 
@@ -291,6 +310,7 @@ class Product extends Model
 ```
 
 ### 3. Create Interface
+
 ```php
 <?php
 
@@ -308,6 +328,7 @@ interface ProductRepositoryInterface
 ```
 
 ### 4. Create Repository
+
 ```php
 <?php
 
@@ -378,11 +399,13 @@ class ProductRepository implements ProductRepositoryInterface
 ```
 
 ### 5. Register di RepositoryServiceProvider
+
 ```php
 $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
 ```
 
 ### 6. Create Controller
+
 ```php
 <?php
 
@@ -439,17 +462,20 @@ class ProductController extends Controller
 ```
 
 ### 7. Create Form Requests
+
 ```bash
 php artisan make:request Product/ProductStoreRequest
 php artisan make:request Product/ProductUpdateRequest
 ```
 
 ### 8. Create Resource
+
 ```bash
 php artisan make:resource ProductResource
 ```
 
 ### 9. Add Routes
+
 ```php
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('product', ProductController::class);
@@ -469,37 +495,40 @@ Route::middleware('auth:sanctum')->group(function () {
 
 ## 🔒 Security
 
-- CORS sudah dikonfigurasi
-- Sanctum untuk API authentication
-- Password di-hash otomatis
-- Token expiration bisa diatur di config/sanctum.php
-- Soft deletes untuk data integrity
+-   CORS sudah dikonfigurasi
+-   Sanctum untuk API authentication
+-   Password di-hash otomatis
+-   Token expiration bisa diatur di config/sanctum.php
+-   Soft deletes untuk data integrity
 
 ## 📝 Response Format
 
 ### Success Response
+
 ```json
 {
-  "success": true,
-  "message": "Operation successful",
-  "data": {
-    // your data here
-  }
+    "success": true,
+    "message": "Operation successful",
+    "data": {
+        // your data here
+    }
 }
 ```
 
 ### Error Response
+
 ```json
 {
-  "success": false,
-  "message": "Error message",
-  "errors": {
-    "field": ["error detail"]
-  }
+    "success": false,
+    "message": "Error message",
+    "errors": {
+        "field": ["error detail"]
+    }
 }
 ```
 
 ### Paginated Response
+
 ```json
 {
   "success": true,
@@ -526,7 +555,7 @@ MIT License
 
 ## 👨‍💻 Author
 
-Created with ❤️ by Fadel
+Created with ❤️ by Yuda A.
 
 ---
 
