@@ -24,6 +24,15 @@ Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, dan 
 -   ✅ Search Functionality
 -   ✅ CORS Configuration
 
+**📖 Dokumentasi:**
+
+-   [INSTALLATION.md](INSTALLATION.md) - Panduan instalasi lengkap
+-   [MIDDLEWARE.md](MIDDLEWARE.md) - Role & Permission guide
+-   [CORS.md](CORS.md) - CORS configuration guide
+-   [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues & solutions
+-   [GUIDE.md](GUIDE.md) - Quick start & templates
+-   [STRUCTURE.md](STRUCTURE.md) - File structure explanation
+
 ## 🏗️ Project Structure
 
 ```
@@ -54,6 +63,10 @@ app/
 ```
 
 ## 📥 Installation
+
+**📖 Untuk panduan instalasi lengkap step-by-step, lihat [INSTALLATION.md](INSTALLATION.md)**
+
+### Quick Start
 
 ### 1. Install Laravel
 
@@ -555,7 +568,7 @@ MIT License
 
 ## 👨‍💻 Author
 
-Created with ❤️ by Yuda A.
+Created with ❤️ by Yuda
 
 ---
 
