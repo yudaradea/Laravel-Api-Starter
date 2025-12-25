@@ -2,7 +2,7 @@
 
 ## Struktur Lengkap
 
-```
+```plaintext
 laravel-api-starter/
 ├── 📄 README.md                          # Dokumentasi utama
 ├── 📄 GUIDE.md                           # Panduan cepat dan template
@@ -61,7 +61,7 @@ laravel-api-starter/
 │   └── 📁 seeders/
 │       ├── DatabaseSeeder.php            # Main seeder
 │       ├── RoleSeeder.php                # Seed roles & permissions
-│       └── UserSeeder.php                # Seed default users
+│       ├── UserSeeder.php                # Seed default users
 │
 ├── 📁 routes/
 │   └── api.php                           # API routes definition
@@ -75,71 +75,83 @@ laravel-api-starter/
 
 ### Core Files
 
-| File | Deskripsi |
-|------|-----------|
-| `README.md` | Dokumentasi lengkap instalasi dan penggunaan |
-| `GUIDE.md` | Panduan cepat dengan template module |
-| `CHANGELOG.md` | Riwayat perubahan dan fitur |
-| `install.sh` | Script untuk instalasi otomatis |
-| `postman_collection.json` | Koleksi API untuk testing di Postman |
+| File                      | Deskripsi                                    |
+| ------------------------- | -------------------------------------------- |
+| `README.md`               | Dokumentasi lengkap instalasi dan penggunaan |
+| `GUIDE.md`                | Panduan cepat dengan template module         |
+| `CHANGELOG.md`            | Riwayat perubahan dan fitur                  |
+| `install.sh`              | Script untuk instalasi otomatis              |
+| `postman_collection.json` | Koleksi API untuk testing di Postman         |
 
 ### Application Layer
 
 #### Traits
-- **UUID.php**: Trait untuk menggunakan UUID sebagai primary key
+
+-   **UUID.php**: Trait untuk menggunakan UUID sebagai primary key
 
 #### Helpers
-- **ResponseHelper.php**: Helper untuk membuat response API yang konsisten
-  - `success()`: Response sukses
-  - `error()`: Response error
+
+-   **ResponseHelper.php**: Helper untuk membuat response API yang konsisten
+    -   `success()`: Response sukses
+    -   `error()`: Response error
 
 #### Interfaces
-- **AuthRepositoryInterface.php**: Contract untuk authentication
-  - `login()`, `register()`, `logout()`, `me()`
-- **UserRepositoryInterface.php**: Contract untuk user management
-  - `index()`, `store()`, `show()`, `update()`, `destroy()`, `updatePassword()`
+
+-   **AuthRepositoryInterface.php**: Contract untuk authentication
+    -   `login()`, `register()`, `logout()`, `me()`
+-   **UserRepositoryInterface.php**: Contract untuk user management
+    -   `index()`, `store()`, `show()`, `update()`, `destroy()`, `updatePassword()`
 
 #### Repositories
-- **AuthRepository.php**: Business logic untuk authentication
-- **UserRepository.php**: Business logic untuk user CRUD operations
+
+-   **AuthRepository.php**: Business logic untuk authentication
+-   **UserRepository.php**: Business logic untuk user CRUD operations
 
 #### Models
-- **User.php**: Model dengan UUID, Soft Deletes, Roles, dan Search scope
-- **PersonalAccessToken.php**: Custom Sanctum token model dengan UUID
+
+-   **User.php**: Model dengan UUID, Soft Deletes, Roles, dan Search scope
+-   **PersonalAccessToken.php**: Custom Sanctum token model dengan UUID
 
 #### Controllers
-- **AuthController.php**: Endpoint untuk login, register, logout, me
-- **UserController.php**: CRUD endpoints untuk user management
+
+-   **AuthController.php**: Endpoint untuk login, register, logout, me
+-   **UserController.php**: CRUD endpoints untuk user management
 
 #### Requests (Form Validation)
-- **LoginStoreRequest.php**: Validasi email & password
-- **RegisterStoreRequest.php**: Validasi registrasi user baru
-- **UserStoreRequest.php**: Validasi create user
-- **UserUpdateRequest.php**: Validasi update user
-- **UserUpdatePasswordRequest.php**: Validasi update password
+
+-   **LoginStoreRequest.php**: Validasi email & password
+-   **RegisterStoreRequest.php**: Validasi registrasi user baru
+-   **UserStoreRequest.php**: Validasi create user
+-   **UserUpdateRequest.php**: Validasi update user
+-   **UserUpdatePasswordRequest.php**: Validasi update password
 
 #### Resources (Response Formatting)
-- **UserResource.php**: Format response user dengan roles & permissions
-- **PaginateResource.php**: Format response pagination yang reusable
+
+-   **UserResource.php**: Format response user dengan roles & permissions
+-   **PaginateResource.php**: Format response pagination yang reusable
 
 ### Database Layer
 
 #### Migrations
+
 1. **create_users_table**: Tabel users dengan UUID
 2. **create_personal_access_tokens_table**: Tabel untuk Sanctum tokens
 3. **create_permission_tables**: Tabel untuk Spatie Permission (roles, permissions, pivot tables)
 
 #### Seeders
-- **RoleSeeder**: Seed 3 roles (super-admin, admin, user) dengan permissions
-- **UserSeeder**: Seed 3 default users dengan berbagai roles
-- **DatabaseSeeder**: Orchestrator untuk menjalankan semua seeders
+
+-   **RoleSeeder**: Seed 3 roles (super-admin, admin, user) dengan permissions
+-   **UserSeeder**: Seed 3 default users dengan berbagai roles
+-   **DatabaseSeeder**: Orchestrator untuk menjalankan semua seeders
 
 ### Routes
-- **api.php**: Definisi semua API endpoints dengan authentication middleware
+
+-   **api.php**: Definisi semua API endpoints dengan authentication middleware
 
 ### Configuration
-- **sanctum.php**: Konfigurasi Laravel Sanctum untuk API authentication
-- **permission.php**: Konfigurasi Spatie Permission untuk role & permission management
+
+-   **sanctum.php**: Konfigurasi Laravel Sanctum untuk API authentication
+-   **permission.php**: Konfigurasi Spatie Permission untuk role & permission management
 
 ## 🔄 Data Flow
 
@@ -155,14 +167,15 @@ Request → Route → Controller → Repository → Model → Database
 2. **Route**: `routes/api.php` → `UserController@getAllPaginated`
 3. **Controller**: `UserController` → calls `UserRepository`
 4. **Repository**: `UserRepository@getAllPaginated`
-   - Query database dengan pagination & search
-   - Return data menggunakan `ResponseHelper`
+    - Query database dengan pagination & search
+    - Return data menggunakan `ResponseHelper`
 5. **Resource**: `PaginateResource` → format data
 6. **Response**: JSON dengan format standar
 
 ## 📊 Database Schema
 
 ### Users Table
+
 ```sql
 - id (uuid, primary)
 - name (string)
@@ -176,6 +189,7 @@ Request → Route → Controller → Repository → Model → Database
 ```
 
 ### Personal Access Tokens Table
+
 ```sql
 - id (uuid, primary)
 - tokenable_type (string)
@@ -190,40 +204,44 @@ Request → Route → Controller → Repository → Model → Database
 ```
 
 ### Roles & Permissions Tables
-- `roles`: id, name, guard_name
-- `permissions`: id, name, guard_name
-- `model_has_roles`: pivot table
-- `model_has_permissions`: pivot table
-- `role_has_permissions`: pivot table
+
+-   `roles`: id, name, guard_name
+-   `permissions`: id, name, guard_name
+-   `model_has_roles`: pivot table
+-   `model_has_permissions`: pivot table
+-   `role_has_permissions`: pivot table
 
 ## 🔑 Default Credentials
 
-| Role | Email | Password |
-|------|-------|----------|
+| Role        | Email             | Password |
+| ----------- | ----------------- | -------- |
 | Super Admin | admin@example.com | password |
-| Admin | user@example.com | password |
-| User | test@example.com | password |
+| Admin       | user@example.com  | password |
+| User        | test@example.com  | password |
 
 ## 📝 API Endpoints
 
 ### Authentication
-- `POST /api/login` - Login
-- `POST /api/register` - Register
-- `POST /api/logout` - Logout (Auth Required)
-- `GET /api/me` - Get current user (Auth Required)
+
+-   `POST /api/login` - Login
+-   `POST /api/register` - Register
+-   `POST /api/logout` - Logout (Auth Required)
+-   `GET /api/me` - Get current user (Auth Required)
 
 ### User Management (Auth Required)
-- `GET /api/user` - Get all users
-- `GET /api/user/all/paginated` - Get paginated users with search
-- `GET /api/user/{id}` - Get user by ID
-- `POST /api/user` - Create new user
-- `PUT /api/user/{id}` - Update user
-- `PUT /api/user/{id}/update-password` - Update user password
-- `DELETE /api/user/{id}` - Delete user (soft delete)
+
+-   `GET /api/user` - Get all users
+-   `GET /api/user/all/paginated` - Get paginated users with search
+-   `GET /api/user/{id}` - Get user by ID
+-   `POST /api/user` - Create new user
+-   `PUT /api/user/{id}` - Update user
+-   `PUT /api/user/{id}/update-password` - Update user password
+-   `DELETE /api/user/{id}` - Delete user (soft delete)
 
 ## 🎨 Response Format
 
 ### Success Response
+
 ```json
 {
   "success": true,
@@ -233,6 +251,7 @@ Request → Route → Controller → Repository → Model → Database
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
@@ -242,6 +261,7 @@ Request → Route → Controller → Repository → Model → Database
 ```
 
 ### Paginated Response
+
 ```json
 {
   "success": true,

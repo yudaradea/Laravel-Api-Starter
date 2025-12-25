@@ -4,10 +4,10 @@ Panduan lengkap instalasi Laravel API Starter Pack dari awal sampai running.
 
 ## ✅ Requirements
 
-- PHP >= 8.2
-- Composer
-- MySQL >= 8.0 atau SQLite
-- Git (optional)
+-   PHP >= 8.2
+-   Composer
+-   MySQL >= 8.0 atau SQLite
+-   Git (optional)
 
 ## 🚀 Method 1: Fresh Install (Recommended)
 
@@ -61,12 +61,15 @@ cp .env.example /path/to/my-api-project/.env.starter-example
 
 #### Option A: MySQL
 
-1. Create database:
+1.Create database:
+
 ```sql
 CREATE DATABASE my_api_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-2. Update `.env`:
+<br/>
+2.Update `.env`:
+
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -78,12 +81,15 @@ DB_PASSWORD=your_password
 
 #### Option B: SQLite (Easier for development)
 
-1. Create database file:
+1.Create database file:
+
 ```bash
 touch database/database.sqlite
 ```
 
-2. Update `.env`:
+<br/>
+2.Update `.env`:
+
 ```env
 DB_CONNECTION=sqlite
 # Comment these out:
@@ -115,7 +121,8 @@ php artisan migrate:fresh --seed
 ```
 
 **Output yang benar:**
-```
+
+```plaintext
 Migration table created successfully.
 Migrating: 0001_01_01_000000_create_users_table
 Migrated:  0001_01_01_000000_create_users_table (XXX ms)
@@ -137,7 +144,8 @@ php artisan route:list
 ```
 
 **Harus muncul routes dengan prefix `/api`:**
-```
+
+```plaintext
 POST   api/login
 POST   api/register
 GET    api/me
@@ -168,6 +176,7 @@ curl -X POST http://localhost:8000/api/login \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "success": true,
@@ -214,12 +223,13 @@ chmod +x install.sh
 ```
 
 The script will:
-- Create new Laravel project
-- Install dependencies
-- Copy all files
-- Setup database (SQLite)
-- Run migrations & seeders
-- Generate app key
+
+-   Create new Laravel project
+-   Install dependencies
+-   Copy all files
+-   Setup database (SQLite)
+-   Run migrations & seeders
+-   Generate app key
 
 ### Step 4: Start Server
 
@@ -232,17 +242,18 @@ php artisan serve
 
 After installation, verify:
 
-- [ ] `php artisan route:list` shows API routes
-- [ ] Can login via API
-- [ ] Token authentication works
-- [ ] Database tables created
-- [ ] Default users seeded
+-   [ ] `php artisan route:list` shows API routes
+-   [ ] Can login via API
+-   [ ] Token authentication works
+-   [ ] Database tables created
+-   [ ] Default users seeded
 
 ## ⚠️ Common Issues
 
 ### Issue 1: Routes not showing
 
 **Solution:** Check `bootstrap/app.php` has:
+
 ```php
 api: __DIR__.'/../routes/api.php',
 ```
@@ -250,6 +261,7 @@ api: __DIR__.'/../routes/api.php',
 ### Issue 2: "Field 'id' doesn't have a default value"
 
 **Solution:** Check `app/Providers/AppServiceProvider.php`:
+
 ```php
 public function boot(): void
 {
@@ -260,6 +272,7 @@ public function boot(): void
 ### Issue 3: "Target [AuthRepositoryInterface] is not instantiable"
 
 **Solution:** Check `bootstrap/providers.php`:
+
 ```php
 return [
     App\Providers\AppServiceProvider::class,
@@ -270,6 +283,7 @@ return [
 ### Issue 4: Permission denied on database/database.sqlite
 
 **Solution:**
+
 ```bash
 chmod 664 database/database.sqlite
 chmod 775 database
@@ -277,9 +291,10 @@ chmod 775 database
 
 ### Issue 5: SQLSTATE connection refused
 
-**Solution:** 
-- MySQL: Make sure MySQL server is running
-- SQLite: Make sure `database/database.sqlite` file exists
+**Solution:**
+
+-   MySQL: Make sure MySQL server is running
+-   SQLite: Make sure `database/database.sqlite` file exists
 
 ## 📖 Next Steps
 

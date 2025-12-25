@@ -7,13 +7,18 @@ use Illuminate\Support\Facades\Route;
 /**
  * Authentication Routes (Public)
  */
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::middleware('throttle:login')->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+});
+
+Route::middleware('throttle:register')->group(function () {
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+});
 
 /**
  * Protected Routes (Require Authentication)
  */
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     // Auth Routes
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -22,7 +27,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Routes
     Route::apiResource('user', UserController::class);
     Route::get('/user/all/paginated', [UserController::class, 'getAllPaginated']);
-    Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword']);
+
+    // Sensitive operations (dengan rate limit lebih ketat)
+    Route::middleware('throttle:sensitive')->group(function () {
+        Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword']);
+        Route::delete('/user/{id}', [UserController::class, 'destroy']);
+    });
 
     // Add your other protected routes here...
 });

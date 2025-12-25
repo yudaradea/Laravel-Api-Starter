@@ -1,6 +1,6 @@
 # 🚀 Laravel API Starter Pack
 
-Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, dan Spatie Permission yang siap pakai untuk project baru.
+Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, Spatie Permission, dan fitur-fitur production-ready lainnya.
 
 ## 📦 Tech Stack
 
@@ -13,6 +13,8 @@ Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, dan 
 
 ## ✨ Features
 
+### 🔐 Core Features
+
 -   ✅ Authentication (Login, Register, Logout, Me)
 -   ✅ Role & Permission Management (Spatie)
 -   ✅ Repository Pattern
@@ -24,14 +26,144 @@ Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, dan 
 -   ✅ Search Functionality
 -   ✅ CORS Configuration
 
-**📖 Dokumentasi:**
+### 🚀 Advanced Features
 
--   [INSTALLATION.md](INSTALLATION.md) - Panduan instalasi lengkap
--   [MIDDLEWARE.md](MIDDLEWARE.md) - Role & Permission guide
--   [CORS.md](CORS.md) - CORS configuration guide
--   [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues & solutions
--   [GUIDE.md](GUIDE.md) - Quick start & templates
--   [STRUCTURE.md](STRUCTURE.md) - File structure explanation
+-   ✅ **Rate Limiting** - 8 pre-configured limiters (anti brute-force, anti-spam)
+-   ✅ **API Versioning** - Support `/api/v1`, `/api/v2`, etc
+-   ✅ **Activity Logging** - Track user activities
+-   ✅ **File Upload Handler** - Image upload with validation
+-   ✅ **Email Verification** - Verify user email
+-   ✅ **Password Reset** - Forgot password functionality
+-   ✅ **Refresh Token** - JWT-style token refresh
+
+## 📖 Comprehensive Documentation
+
+| Documentation                                        | Description                                       |
+| ---------------------------------------------------- | ------------------------------------------------- |
+| **[COMPLETE-GUIDE.md](COMPLETE-GUIDE.md)**           | **🎓 START HERE! Complete step-by-step tutorial** |
+| [INSTALLATION.md](INSTALLATION.md)                   | 📥 Step-by-step installation guide                |
+| [VALIDATION-FLOW.md](VALIDATION-FLOW.md)             | 🔍 How validation works (Form Requests)           |
+| [MIDDLEWARE.md](MIDDLEWARE.md)                       | 🔐 Role & Permission middleware guide             |
+| [RATE-LIMITING.md](RATE-LIMITING.md)                 | ⚡ Rate limiting configuration                    |
+| [API-VERSIONING.md](API-VERSIONING.md)               | 📦 API versioning guide                           |
+| [ACTIVITY-LOG.md](ACTIVITY-LOG.md)                   | 📝 Activity logging system                        |
+| [FILE-UPLOAD.md](FILE-UPLOAD.md)                     | 📎 File upload implementation                     |
+| [EMAIL-VERIFICATION.md](EMAIL-VERIFICATION.md)       | ✉️ Email verification guide                       |
+| [PASSWORD-RESET.md](PASSWORD-RESET.md)               | 🔑 Password reset implementation                  |
+| [REFRESH-TOKEN.md](REFRESH-TOKEN.md)                 | 🔄 Token refresh mechanism                        |
+| [CORS.md](CORS.md)                                   | 🌍 CORS configuration                             |
+| [DOCUMENTATION-WEBSITE.md](DOCUMENTATION-WEBSITE.md) | 🌐 Documentation website setup                    |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md)             | 🔧 Common issues & solutions                      |
+| [GUIDE.md](GUIDE.md)                                 | 🎯 Quick start & templates                        |
+| [STRUCTURE.md](STRUCTURE.md)                         | 📂 File structure explanation                     |
+
+## 🎯 Quick Feature Overview
+
+### 1. Rate Limiting
+
+Protect API from abuse with 8 pre-configured rate limiters:
+
+-   Global API: 60/minute
+-   Login: 5/minute (anti brute-force)
+-   Register: 3/hour (anti-spam)
+-   Password reset: 5/hour
+-   File uploads: 10/minute
+-   Sensitive operations: 10/minute
+
+```php
+// Auto-applied to routes
+Route::middleware('throttle:login')->post('/login', ...);
+```
+
+📖 **[Full Documentation →](RATE-LIMITING.md)**
+
+### 2. API Versioning
+
+Support multiple API versions simultaneously:
+
+```
+/api/v1/login  # Version 1
+/api/v2/login  # Version 2
+```
+
+Maintain backward compatibility while releasing new features.
+
+📖 **[Full Documentation →](API-VERSIONING.md)**
+
+### 3. Activity Logging
+
+Automatic tracking of user activities:
+
+-   Login/logout events
+-   CRUD operations
+-   IP address & user agent
+-   Before/after values
+
+```php
+ActivityLog::log('created', 'User', $user->id, 'User created');
+```
+
+📖 **[Full Documentation →](ACTIVITY-LOG.md)**
+
+### 4. File Upload Handler
+
+Secure file upload with:
+
+-   Image validation (JPEG, PNG, etc)
+-   File size limit
+-   Automatic path generation
+-   Storage integration
+
+```php
+$path = FileUploadService::upload($request->file('avatar'), 'avatars');
+```
+
+📖 **[Full Documentation →](FILE-UPLOAD.md)**
+
+### 5. Email Verification
+
+Send verification email to new users:
+
+-   Email verification link
+-   Resend verification email
+-   Protected routes for verified users
+
+```php
+Route::middleware('verified')->group(function () {
+    // Only verified users
+});
+```
+
+📖 **[Full Documentation →](EMAIL-VERIFICATION.md)**
+
+### 6. Password Reset
+
+Complete forgot password flow:
+
+-   Send reset link via email
+-   Validate reset token
+-   Reset password securely
+
+```php
+POST /api/password/forgot
+POST /api/password/reset
+```
+
+📖 **[Full Documentation →](PASSWORD-RESET.md)**
+
+### 7. Refresh Token
+
+JWT-style token refresh mechanism:
+
+-   Access token (short-lived)
+-   Refresh token (long-lived)
+-   Seamless token renewal
+
+```php
+POST /api/token/refresh
+```
+
+📖 **[Full Documentation →](REFRESH-TOKEN.md)**
 
 ## 🏗️ Project Structure
 
@@ -568,7 +700,7 @@ MIT License
 
 ## 👨‍💻 Author
 
-Created with ❤️ by Yuda
+Created with ❤️ by Aradea
 
 ---
 

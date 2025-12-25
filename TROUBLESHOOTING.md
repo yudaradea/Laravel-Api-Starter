@@ -3,9 +3,10 @@
 ## ❌ Problem: Routes API tidak muncul di `php artisan route:list`
 
 ### Gejala:
-- Sudah copy file `routes/api.php`
-- Sudah jalankan `php artisan install:api`
-- Tapi ketika cek `php artisan route:list`, routes API tidak ada
+
+-   Sudah copy file `routes/api.php`
+-   Sudah jalankan `php artisan install:api`
+-   Tapi ketika cek `php artisan route:list`, routes API tidak ada
 
 ### ✅ Solusi:
 
@@ -66,8 +67,9 @@ Sekarang routes API Anda akan muncul dengan prefix `/api`!
 ## ❌ Problem: RepositoryServiceProvider tidak terdaftar
 
 ### Gejala:
-- Error: `Target [App\Interfaces\AuthRepositoryInterface] is not instantiable`
-- Repository tidak bisa di-inject
+
+-   Error: `Target [App\Interfaces\AuthRepositoryInterface] is not instantiable`
+-   Repository tidak bisa di-inject
 
 ### ✅ Solusi:
 
@@ -96,8 +98,9 @@ php artisan cache:clear
 ## ❌ Problem: Error "Class 'App\Traits\UUID' not found"
 
 ### Gejala:
-- Error saat run migration atau create model
-- UUID trait tidak ditemukan
+
+-   Error saat run migration atau create model
+-   UUID trait tidak ditemukan
 
 ### ✅ Solusi:
 
@@ -113,11 +116,133 @@ composer dump-autoload
 
 ---
 
+## ❌ Problem: Documentation routes showing 404 Not Found
+
+### Gejala:
+
+-   Semua route `/dokumentasi/{slug}` return 404
+-   URL mengarah ke `/dokumentasi/complete-guide` tapi not found
+
+### ✅ Solusi:
+
+#### Step 1: Clear Cache
+
+```bash
+php artisan route:clear
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+```
+
+#### Step 2: Check Route List
+
+```bash
+php artisan route:list | grep dokumentasi
+```
+
+**Harus muncul:**
+
+```plaintext
+GET       dokumentasi ........................ docs.index
+GET       dokumentasi/{slug} ................. docs.show
+```
+
+#### Step 3: Check File Exists
+
+```bash
+ls -la COMPLETE-GUIDE.md
+ls -la INSTALLATION.md
+# Semua .md files harus ada di root project
+```
+
+#### Step 4: Check Controller
+
+Pastikan `DocumentationController.php` ada di:
+
+```plaintext
+app/Http/Controllers/DocumentationController.php
+```
+
+#### Step 5: Check routes/web.php
+
+```php
+Route::prefix('dokumentasi')->group(function () {
+    Route::get('/', [DocumentationController::class, 'index'])->name('docs.index');
+    Route::get('/{slug}', [DocumentationController::class, 'show'])->name('docs.show');
+});
+```
+
+#### Step 6: Restart Server
+
+```bash
+# Stop server (Ctrl+C)
+php artisan serve
+```
+
+#### Step 7: Test Manually
+
+```bash
+# Test home
+curl http://localhost:8000/dokumentasi
+
+# Test specific doc
+curl http://localhost:8000/dokumentasi/complete-guide
+```
+
+### Debug Mode
+
+Jika masih error, enable debug mode di `.env`:
+
+```env
+APP_DEBUG=true
+```
+
+Check `storage/logs/laravel.log` untuk detail error.
+
+---
+
+## ❌ Problem: "Non-static method Route::prefix() cannot be called statically"
+
+### Gejala:
+
+-   Error di `bootstrap/app.php` saat menggunakan `Route::prefix()`
+-   Error message: `Non-static method Illuminate\Routing\Route::prefix() cannot be called statically`
+
+### ✅ Solusi:
+
+Tambahkan import `Route` facade di top of file `bootstrap/app.php`:
+
+```php
+<?php
+
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Route;  // ← PENTING! Tambahkan ini
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        // ...
+        then: function () {
+            Route::prefix('api/v1')  // ← Sekarang Route bisa dipakai
+                ->middleware('api')
+                ->group(base_path('routes/v1.php'));
+        },
+    )
+    // ...
+```
+
+---
+
 ## ❌ Problem: Error "Field 'id' doesn't have a default value" di personal_access_tokens
 
 ### Gejala:
-- Error saat login: `SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value`
-- Error terjadi di table `personal_access_tokens`
+
+-   Error saat login: `SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value`
+-   Error terjadi di table `personal_access_tokens`
 
 ### ✅ Solusi:
 
@@ -194,18 +319,21 @@ Sekarang login API akan berfungsi dengan UUID!
 ## ❌ Problem: Database connection refused
 
 ### Gejala:
-- Error: `SQLSTATE[HY000] [2002] Connection refused`
+
+-   Error: `SQLSTATE[HY000] [2002] Connection refused`
 
 ### ✅ Solusi:
 
 #### Untuk SQLite:
 
 1. Pastikan file database ada:
+
 ```bash
 touch database/database.sqlite
 ```
 
 2. Update `.env`:
+
 ```env
 DB_CONNECTION=sqlite
 # Comment atau hapus yang ini:
@@ -217,6 +345,7 @@ DB_CONNECTION=sqlite
 ```
 
 3. Clear config:
+
 ```bash
 php artisan config:clear
 ```
@@ -224,6 +353,7 @@ php artisan config:clear
 #### Untuk MySQL:
 
 1. Pastikan MySQL berjalan:
+
 ```bash
 # Linux/Mac
 sudo service mysql start
@@ -233,6 +363,7 @@ mysql.server start
 ```
 
 2. Pastikan `.env` benar:
+
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -243,6 +374,7 @@ DB_PASSWORD=password_anda
 ```
 
 3. Create database:
+
 ```sql
 CREATE DATABASE nama_database_anda;
 ```
@@ -252,25 +384,29 @@ CREATE DATABASE nama_database_anda;
 ## ❌ Problem: Token tidak valid / Unauthenticated
 
 ### Gejala:
-- Response: `{"message": "Unauthenticated."}`
-- Header authorization sudah benar
+
+-   Response: `{"message": "Unauthenticated."}`
+-   Header authorization sudah benar
 
 ### ✅ Solusi:
 
 #### Langkah 1: Cek format header
 
 Pastikan format header benar:
-```
+
+```http
 Authorization: Bearer token_anda_disini
 ```
 
 **BUKAN:**
-- `Bearer: token_anda_disini` ❌
-- `Token token_anda_disini` ❌
+
+-   `Bearer: token_anda_disini` ❌
+-   `Token token_anda_disini` ❌
 
 #### Langkah 2: Cek config Sanctum
 
 File `config/sanctum.php`:
+
 ```php
 'middleware' => [
     'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
@@ -290,7 +426,8 @@ php artisan cache:clear
 ## ❌ Problem: CORS Error
 
 ### Gejala:
-- Error di browser console: `Access to XMLHttpRequest has been blocked by CORS policy`
+
+-   Error di browser console: `Access to XMLHttpRequest has been blocked by CORS policy`
 
 ### ✅ Solusi:
 
@@ -316,6 +453,7 @@ return [
 #### Langkah 3: Jika masih error, tambahkan middleware
 
 Di `bootstrap/app.php`:
+
 ```php
 ->withMiddleware(function (Middleware $middleware) {
     $middleware->api(prepend: [
@@ -329,13 +467,15 @@ Di `bootstrap/app.php`:
 ## ❌ Problem: Validation Error Tidak Muncul
 
 ### Gejala:
-- Form validation gagal tapi error message kosong
+
+-   Form validation gagal tapi error message kosong
 
 ### ✅ Solusi:
 
 #### Cek FormRequest
 
 Pastikan method `authorize()` return `true`:
+
 ```php
 public function authorize(): bool
 {
@@ -348,8 +488,9 @@ public function authorize(): bool
 ## ❌ Problem: Role/Permission tidak bisa assign
 
 ### Gejala:
-- Error: `Role does not exist`
-- Role sudah di-seed
+
+-   Error: `Role does not exist`
+-   Role sudah di-seed
 
 ### ✅ Solusi:
 
@@ -374,8 +515,9 @@ Pastikan guard_name di Role sesuai dengan User model guard (default: `web`).
 ## ❌ Problem: Soft Delete tidak bekerja
 
 ### Gejala:
-- Data benar-benar terhapus dari database
-- `deleted_at` tidak ter-set
+
+-   Data benar-benar terhapus dari database
+-   `deleted_at` tidak ter-set
 
 ### ✅ Solusi:
 
@@ -403,6 +545,7 @@ $table->softDeletes();
 ### 1. Enable Debug Mode
 
 Di `.env`:
+
 ```env
 APP_DEBUG=true
 LOG_LEVEL=debug
@@ -421,10 +564,11 @@ php artisan optimize:clear
 ```
 
 Ini akan clear:
-- Route cache
-- Config cache
-- View cache
-- Event cache
+
+-   Route cache
+-   Config cache
+-   View cache
+-   Event cache
 
 ### 4. Reinstall Dependencies
 
