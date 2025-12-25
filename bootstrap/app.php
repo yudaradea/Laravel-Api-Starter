@@ -11,15 +11,10 @@ use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
-        api: __DIR__ . '/../routes/api.php',
+        api: __DIR__ . '/../routes/v1.php',
+        apiPrefix: 'api/v1',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
-        then: function () {
-            // API Version 1
-            Route::prefix('api/v1')
-                ->middleware('api')
-                ->group(base_path('routes/v1.php'));
-        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([

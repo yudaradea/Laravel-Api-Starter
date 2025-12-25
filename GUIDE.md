@@ -16,7 +16,7 @@ composer require spatie/laravel-permission
 # 3. Copy all files from starter pack
 cp -r /path/to/starter-pack/app/* app/
 cp -r /path/to/starter-pack/database/* database/
-cp /path/to/starter-pack/routes/api.php routes/
+cp /path/to/starter-pack/routes/v1.php routes/
 cp /path/to/starter-pack/config/*.php config/
 
 # 4. Update bootstrap/providers.php
@@ -49,11 +49,13 @@ chmod +x install.sh
 ## Testing API
 
 ### 1. Import Postman Collection
+
 Import `postman_collection.json` ke Postman
 
 ### 2. Test Login
+
 ```bash
-curl -X POST http://localhost:8000/api/login \
+curl -X POST http://localhost:8000/api/v1/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@example.com",
@@ -62,6 +64,7 @@ curl -X POST http://localhost:8000/api/login \
 ```
 
 ### 3. Get Current User
+
 ```bash
 curl -X GET http://localhost:8000/api/me \
   -H "Authorization: Bearer YOUR_TOKEN"
@@ -72,6 +75,7 @@ curl -X GET http://localhost:8000/api/me \
 Untuk mempercepat pembuatan module baru, gunakan template berikut:
 
 ### 1. Create Model
+
 ```bash
 php artisan make:model Product
 ```
@@ -111,6 +115,7 @@ class Product extends Model
 ```
 
 ### 2. Create Migration
+
 ```bash
 php artisan make:migration create_products_table
 ```
@@ -131,6 +136,7 @@ public function up(): void
 ```
 
 ### 3. Create Interface
+
 ```php
 <?php
 
@@ -148,6 +154,7 @@ interface ProductRepositoryInterface
 ```
 
 ### 4. Create Repository
+
 ```php
 <?php
 
@@ -221,11 +228,13 @@ class ProductRepository implements ProductRepositoryInterface
 ```
 
 ### 5. Register in RepositoryServiceProvider
+
 ```php
 $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
 ```
 
 ### 6. Create Controller
+
 ```php
 <?php
 
@@ -282,12 +291,14 @@ class ProductController extends Controller
 ```
 
 ### 7. Create Form Requests
+
 ```bash
 php artisan make:request Product/ProductStoreRequest
 php artisan make:request Product/ProductUpdateRequest
 ```
 
 ### 8. Create Resource
+
 ```bash
 php artisan make:resource ProductResource
 ```
@@ -318,8 +329,11 @@ class ProductResource extends JsonResource
 ```
 
 ### 9. Add Routes
+
+Buka `routes/v1.php` dan tambahkan:
+
 ```php
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::apiResource('product', ProductController::class);
     Route::get('/product/all/paginated', [ProductController::class, 'getAllPaginated']);
 });
@@ -328,6 +342,7 @@ Route::middleware('auth:sanctum')->group(function () {
 ## Tips & Tricks
 
 ### 1. Caching
+
 ```php
 // In your repository
 use Illuminate\Support\Facades\Cache;
@@ -335,7 +350,7 @@ use Illuminate\Support\Facades\Cache;
 public function index($perPage, $search)
 {
     $cacheKey = "products_{$perPage}_{$search}";
-    
+
     return Cache::remember($cacheKey, 3600, function () use ($perPage, $search) {
         $products = Product::search($search)->paginate($perPage);
         return ResponseHelper::success(
@@ -347,6 +362,7 @@ public function index($perPage, $search)
 ```
 
 ### 2. File Upload
+
 ```php
 // In your repository
 public function store(array $data)
@@ -354,7 +370,7 @@ public function store(array $data)
     if (isset($data['image'])) {
         $data['image'] = $data['image']->store('products', 'public');
     }
-    
+
     $product = Product::create($data);
     return ResponseHelper::success(
         new ProductResource($product),
@@ -365,6 +381,7 @@ public function store(array $data)
 ```
 
 ### 3. Relationships
+
 ```php
 // In your repository
 public function index($perPage, $search)
@@ -372,7 +389,7 @@ public function index($perPage, $search)
     $products = Product::with(['category', 'supplier'])
         ->search($search)
         ->paginate($perPage);
-        
+
     return ResponseHelper::success(
         ProductResource::collection($products),
         'Products retrieved successfully'
@@ -381,6 +398,7 @@ public function index($perPage, $search)
 ```
 
 ### 4. Middleware Permission
+
 ```php
 // In your route - Protect by role
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
@@ -401,7 +419,7 @@ Route::middleware(['auth:sanctum', 'role_or_permission:admin|view products'])->g
 public function __construct(ProductRepositoryInterface $productRepository)
 {
     $this->productRepository = $productRepository;
-    
+
     // Apply middleware to specific methods
     $this->middleware('permission:view products')->only(['index', 'show']);
     $this->middleware('permission:create products')->only('store');
@@ -431,11 +449,13 @@ if ($user->hasAllPermissions(['edit products', 'delete products'])) {
 ## Troubleshooting
 
 ### Error: Class not found
+
 ```bash
 composer dump-autoload
 ```
 
 ### Error: SQLSTATE connection refused
+
 ```bash
 # Check .env database configuration
 # For SQLite, make sure database file exists
@@ -443,6 +463,7 @@ touch database/database.sqlite
 ```
 
 ### Error: Token mismatch
+
 ```bash
 php artisan config:clear
 php artisan cache:clear

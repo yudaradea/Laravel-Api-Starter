@@ -1,47 +1,46 @@
 <?php
 
-use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-/**
- * API Version 1 Routes
- * Prefix: /api/v1
- */
+/*
+|--------------------------------------------------------------------------
+| API Routes V1
+|--------------------------------------------------------------------------
+|
+| Prefix: /api/v1
+|
+*/
 
-/**
- * Authentication Routes (Public)
- */
+// --- Authentication Routes ---
 Route::middleware('throttle:login')->group(function () {
-    Route::post('/login', [AuthController::class, 'login'])->name('v1.login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
 });
 
 Route::middleware('throttle:register')->group(function () {
-    Route::post('/register', [AuthController::class, 'register'])->name('v1.register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
 });
 
-/**
- * Protected Routes (Require Authentication)
- */
+// --- Protected Routes ---
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
-    // Auth Routes
-    Route::post('/logout', [AuthController::class, 'logout'])->name('v1.logout');
-    Route::get('/me', [AuthController::class, 'me'])->name('v1.me');
+    // Auth
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/me', [AuthController::class, 'me'])->name('me');
 
-    // User Routes
-    Route::apiResource('user', UserController::class)->names([
-        'index' => 'v1.user.index',
-        'store' => 'v1.user.store',
-        'show' => 'v1.user.show',
-        'update' => 'v1.user.update',
-        'destroy' => 'v1.user.destroy',
-    ]);
-    Route::get('/user/all/paginated', [UserController::class, 'getAllPaginated'])->name('v1.user.paginated');
+    // Profile (Standardized)
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/profile', [ProfileController::class, 'update']); // Handles upload via FormRequest
 
-    // Sensitive operations (dengan rate limit lebih ketat)
+    // User Management
+    Route::apiResource('user', UserController::class);
+    Route::get('/user/all/paginated', [UserController::class, 'getAllPaginated']);
+
+    // Sensitive Ops
     Route::middleware('throttle:sensitive')->group(function () {
-        Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword'])->name('v1.user.password');
-        Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('v1.user.delete');
+        Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword']);
+        Route::delete('/user/{id}', [UserController::class, 'destroy']);
     });
 });

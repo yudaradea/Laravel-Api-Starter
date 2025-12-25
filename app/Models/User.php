@@ -66,4 +66,8 @@ class User extends Authenticatable
                 ->orWhere('email', 'like', '%' . $search . '%');
         });
     }
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
 }

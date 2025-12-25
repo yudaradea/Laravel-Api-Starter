@@ -1,68 +1,100 @@
 # 📎 File Upload Handler
 
-Secure file upload system untuk images, documents, dan files lainnya.
+Secure file upload system untuk images, documents, dan files lainnya. Menggunakan `FileUploadService` yang sudah terintegrasi.
 
-## 🚀 Implementation Status
+## 🚀 Fitur
 
-🚧 **Planned Features:**
-- Image upload with validation
-- File size limits
-- Automatic thumbnail generation
-- Multiple file types support
-- Cloud storage integration (S3, etc)
-- Secure filename generation
+-   ✅ **Validasi Otomatis**: Memastikan file yang diupload aman.
+-   ✅ **Secure Filenames**: Menggunakan UUID untuk mencegah nama file duplikat.
+-   ✅ **Storage Management**: Mudah mengatur disk (public/s3/local).
 
-## 📖 Planned Usage
+## 📖 Cara Penggunaan (Usage)
 
-### Upload File
+### 1. Basic Upload
+
+Gunakan `FileUploadService::upload()` di Controller atau Repository Anda.
+
 ```php
 use App\Services\FileUploadService;
 
-public function uploadAvatar(Request $request)
+public function updateAvatar(Request $request)
 {
+    // 1. Validasi Input
     $request->validate([
-        'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        'avatar' => 'required|image|max:2048', // Max 2MB
     ]);
-    
-    $path = FileUploadService::upload(
-        $request->file('avatar'),
-        'avatars',
-        ['resize' => [200, 200]]
-    );
-    
-    auth()->user()->update(['avatar' => $path]);
-    
-    return ResponseHelper::success(['path' => $path]);
+
+    // 2. Upload File
+    if ($request->hasFile('avatar')) {
+        // Upload ke folder 'avatars' di storage public
+        $path = FileUploadService::upload($request->file('avatar'), 'avatars');
+
+        // Output: avatars/uuid-filename.jpg
+
+        // 3. Simpan ke Database
+        $user->update(['avatar' => $path]);
+    }
 }
 ```
 
-### Configuration
+### 2. Delete File
+
+Jangan lupa hapus file lama saat update/delete data untuk menghemat storage.
+
 ```php
-// config/filesystems.php
-'uploads' => [
-    'max_size' => 2048, // KB
-    'allowed_types' => ['jpeg', 'png', 'jpg', 'pdf', 'doc'],
-    'path' => 'uploads',
-];
+use App\Services\FileUploadService;
+
+public function deleteUser($id)
+{
+    $user = User::find($id);
+
+    // Hapus file avatar jika ada
+    if ($user->avatar) {
+        FileUploadService::delete($user->avatar);
+    }
+
+    $user->delete();
+}
 ```
 
-## 🔧 To Implement
+## 🔧 Konfigurasi
+
+### 1. Storage Link
+
+Wajib dijalankan agar file bisa diakses via URL:
 
 ```bash
-# Create storage link
 php artisan storage:link
-
-# Set permissions
-chmod -R 775 storage/app/public
 ```
 
-## 🎯 Use Cases
+### 2. Akses File di Frontend
 
-1. **Profile Pictures** - User avatars
-2. **Documents** - Upload PDFs, Word docs
-3. **Product Images** - E-commerce photos
-4. **Attachments** - Email attachments, files
+Di Laravel, Anda bisa mengakses file public dengan helper `asset()` atau `Storage::url()`.
 
----
+**Di Controller/Resource:**
 
-**Status:** Foundation ready. Full implementation coming in next update.
+```php
+public function toArray($request)
+{
+    return [
+        'id' => $this->id,
+        'name' => $this->name,
+        // Pastikan generate full URL
+        'avatar_url' => $this->avatar ? asset('storage/' . $this->avatar) : null,
+    ];
+}
+```
+
+## 🎯 Contoh Integrasi: User Profile
+
+Kami telah menyediakan module `Profile` sebagai referensi implementasi file upload yang lengkap.
+
+**Endpoint:**
+
+-   `POST /api/profile` (Update profile & upload avatar)
+-   `GET /api/profile` (Lihat profile & avatar URL)
+
+Lihat kodenya di:
+
+-   `app/Http/Controllers/ProfileController.php`
+-   `app/Repositories/ProfileRepository.php`

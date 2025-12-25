@@ -34,5 +34,9 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::delete('/user/{id}', [UserController::class, 'destroy']);
     });
 
+    // Profile Routes
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show']);
+    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update']);
+
     // Add your other protected routes here...
 });

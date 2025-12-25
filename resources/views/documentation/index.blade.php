@@ -12,9 +12,9 @@
             Complete documentation for your production-ready API starter pack
         </p>
         <div class="flex justify-center space-x-4">
-            <a href="/dokumentasi/complete-guide"
+            <a href="/dokumentasi/readme"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition">
-                🎓 Complete Guide - Start Here!
+                🚀 Start Here (Read Me)
             </a>
             <a href="https://github.com" target="_blank"
                 class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition">
@@ -62,13 +62,9 @@
                         <div class="p-6">
                             <div class="flex items-start justify-between mb-3">
                                 <div class="text-4xl">{{ $doc['icon'] }}</div>
-                                @if (str_contains($doc['file'], 'ACTIVITY-LOG') ||
-                                        str_contains($doc['file'], 'FILE-UPLOAD') ||
-                                        str_contains($doc['file'], 'EMAIL-VERIFICATION') ||
-                                        str_contains($doc['file'], 'PASSWORD-RESET') ||
-                                        str_contains($doc['file'], 'REFRESH-TOKEN'))
+                                @if (isset($doc['badge']))
                                     <span
-                                        class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">Planned</span>
+                                        class="bg-{{ $doc['badge_color'] ?? 'green' }}-100 text-{{ $doc['badge_color'] ?? 'green' }}-800 text-xs px-2 py-1 rounded-full font-semibold">{{ $doc['badge'] }}</span>
                                 @else
                                     <span
                                         class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">Ready</span>
@@ -87,10 +83,9 @@
     <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg p-8 text-white">
         <h2 class="text-3xl font-bold mb-6 text-center">🎯 Quick Start</h2>
         <div class="grid md:grid-cols-4 gap-4 text-center">
-            <a href="/dokumentasi/complete-guide"
-                class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg p-4 transition">
-                <div class="text-3xl mb-2">🎓</div>
-                <div class="font-semibold">Complete Guide</div>
+            <a href="/dokumentasi/readme" class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg p-4 transition">
+                <div class="text-3xl mb-2">👋</div>
+                <div class="font-semibold">Introduction</div>
             </a>
             <a href="/dokumentasi/installation"
                 class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg p-4 transition">

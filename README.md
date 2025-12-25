@@ -13,6 +13,14 @@ Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, Spat
 
 ## ✨ Features
 
+### 🖥️ Frontend (New)
+
+-   ✅ **Vue.js 3 SPA** - Located in `frontend/frontend-starter`
+-   ✅ **Pinia** - State Management
+-   ✅ **TailwindCSS** - Styling framework
+-   ✅ **Authentication** - Integrated with API v1
+-   ✅ **Admin Panel** - User management interface
+
 ### 🔐 Core Features
 
 -   ✅ Authentication (Login, Register, Logout, Me)
@@ -30,677 +38,197 @@ Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, Spat
 
 -   ✅ **Rate Limiting** - 8 pre-configured limiters (anti brute-force, anti-spam)
 -   ✅ **API Versioning** - Support `/api/v1`, `/api/v2`, etc
--   ✅ **Activity Logging** - Track user activities
--   ✅ **File Upload Handler** - Image upload with validation
+-   ✅ **Activity Logging** - Helper siap pakai `ActivityLogger`
+-   ✅ **File Upload Handler** - Service `FileUploadService` aman dan mudah
+-   ✅ **Email Queue** - Konfigurasi production-ready untuk email
 -   ✅ **Email Verification** - Verify user email
 -   ✅ **Password Reset** - Forgot password functionality
 -   ✅ **Refresh Token** - JWT-style token refresh
 
-## 📖 Comprehensive Documentation
+---
 
-| Documentation                                        | Description                                       |
-| ---------------------------------------------------- | ------------------------------------------------- |
-| **[COMPLETE-GUIDE.md](COMPLETE-GUIDE.md)**           | **🎓 START HERE! Complete step-by-step tutorial** |
-| [INSTALLATION.md](INSTALLATION.md)                   | 📥 Step-by-step installation guide                |
-| [VALIDATION-FLOW.md](VALIDATION-FLOW.md)             | 🔍 How validation works (Form Requests)           |
-| [MIDDLEWARE.md](MIDDLEWARE.md)                       | 🔐 Role & Permission middleware guide             |
-| [RATE-LIMITING.md](RATE-LIMITING.md)                 | ⚡ Rate limiting configuration                    |
-| [API-VERSIONING.md](API-VERSIONING.md)               | 📦 API versioning guide                           |
-| [ACTIVITY-LOG.md](ACTIVITY-LOG.md)                   | 📝 Activity logging system                        |
-| [FILE-UPLOAD.md](FILE-UPLOAD.md)                     | 📎 File upload implementation                     |
-| [EMAIL-VERIFICATION.md](EMAIL-VERIFICATION.md)       | ✉️ Email verification guide                       |
-| [PASSWORD-RESET.md](PASSWORD-RESET.md)               | 🔑 Password reset implementation                  |
-| [REFRESH-TOKEN.md](REFRESH-TOKEN.md)                 | 🔄 Token refresh mechanism                        |
-| [CORS.md](CORS.md)                                   | 🌍 CORS configuration                             |
-| [DOCUMENTATION-WEBSITE.md](DOCUMENTATION-WEBSITE.md) | 🌐 Documentation website setup                    |
-| [TROUBLESHOOTING.md](TROUBLESHOOTING.md)             | 🔧 Common issues & solutions                      |
-| [GUIDE.md](GUIDE.md)                                 | 🎯 Quick start & templates                        |
-| [STRUCTURE.md](STRUCTURE.md)                         | 📂 File structure explanation                     |
+## 📥 Panduan Instalasi (Installation)
 
-## 🎯 Quick Feature Overview
-
-### 1. Rate Limiting
-
-Protect API from abuse with 8 pre-configured rate limiters:
-
--   Global API: 60/minute
--   Login: 5/minute (anti brute-force)
--   Register: 3/hour (anti-spam)
--   Password reset: 5/hour
--   File uploads: 10/minute
--   Sensitive operations: 10/minute
-
-```php
-// Auto-applied to routes
-Route::middleware('throttle:login')->post('/login', ...);
-```
-
-📖 **[Full Documentation →](RATE-LIMITING.md)**
-
-### 2. API Versioning
-
-Support multiple API versions simultaneously:
-
-```
-/api/v1/login  # Version 1
-/api/v2/login  # Version 2
-```
-
-Maintain backward compatibility while releasing new features.
-
-📖 **[Full Documentation →](API-VERSIONING.md)**
-
-### 3. Activity Logging
-
-Automatic tracking of user activities:
-
--   Login/logout events
--   CRUD operations
--   IP address & user agent
--   Before/after values
-
-```php
-ActivityLog::log('created', 'User', $user->id, 'User created');
-```
-
-📖 **[Full Documentation →](ACTIVITY-LOG.md)**
-
-### 4. File Upload Handler
-
-Secure file upload with:
-
--   Image validation (JPEG, PNG, etc)
--   File size limit
--   Automatic path generation
--   Storage integration
-
-```php
-$path = FileUploadService::upload($request->file('avatar'), 'avatars');
-```
-
-📖 **[Full Documentation →](FILE-UPLOAD.md)**
-
-### 5. Email Verification
-
-Send verification email to new users:
-
--   Email verification link
--   Resend verification email
--   Protected routes for verified users
-
-```php
-Route::middleware('verified')->group(function () {
-    // Only verified users
-});
-```
-
-📖 **[Full Documentation →](EMAIL-VERIFICATION.md)**
-
-### 6. Password Reset
-
-Complete forgot password flow:
-
--   Send reset link via email
--   Validate reset token
--   Reset password securely
-
-```php
-POST /api/password/forgot
-POST /api/password/reset
-```
-
-📖 **[Full Documentation →](PASSWORD-RESET.md)**
-
-### 7. Refresh Token
-
-JWT-style token refresh mechanism:
-
--   Access token (short-lived)
--   Refresh token (long-lived)
--   Seamless token renewal
-
-```php
-POST /api/token/refresh
-```
-
-📖 **[Full Documentation →](REFRESH-TOKEN.md)**
-
-## 🏗️ Project Structure
-
-```
-app/
-├── Http/
-│   ├── Controllers/
-│   │   └── AuthController.php
-│   ├── Requests/
-│   │   └── LoginStoreRequest.php
-│   └── Resources/
-│       ├── PaginateResource.php
-│       └── UserResource.php
-├── Interfaces/
-│   ├── AuthRepositoryInterface.php
-│   └── UserRepositoryInterface.php
-├── Repositories/
-│   ├── AuthRepository.php
-│   └── UserRepository.php
-├── Models/
-│   ├── User.php
-│   └── PersonalAccessToken.php
-├── Traits/
-│   └── UUID.php
-├── Helpers/
-│   └── ResponseHelper.php
-└── Providers/
-    └── RepositoryServiceProvider.php
-```
-
-## 📥 Installation
-
-**📖 Untuk panduan instalasi lengkap step-by-step, lihat [INSTALLATION.md](INSTALLATION.md)**
-
-### Quick Start
-
-### 1. Install Laravel
+### 1. Clone & Install
 
 ```bash
-composer create-project laravel/laravel project-name
-cd project-name
+# Clone project
+git clone https://github.com/username/laravel-api-starter.git
+cd laravel-api-starter
+
+# Install dependencies
+composer install
+
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
 ```
 
-### 2. Install Dependencies
+### 2. Setup Database
 
-```bash
-composer require laravel/sanctum
-composer require spatie/laravel-permission
-```
-
-### 3. Copy Files
-
-Copy semua file dari starter pack ke project Laravel Anda:
-
-```bash
-# Copy traits
-cp -r app/Traits your-project/app/
-
-# Copy helpers
-cp -r app/Helpers your-project/app/
-
-# Copy interfaces
-cp -r app/Interfaces your-project/app/
-
-# Copy repositories
-cp -r app/Repositories your-project/app/
-
-# Copy providers
-cp app/Providers/RepositoryServiceProvider.php your-project/app/Providers/
-
-# Copy controllers
-cp app/Http/Controllers/AuthController.php your-project/app/Http/Controllers/
-
-# Copy requests
-cp -r app/Http/Requests your-project/app/Http/Requests/
-
-# Copy resources
-cp -r app/Http/Resources your-project/app/Http/Resources/
-
-# Copy models
-cp app/Models/User.php your-project/app/Models/
-cp app/Models/PersonalAccessToken.php your-project/app/Models/
-
-# Copy migrations
-cp database/migrations/* your-project/database/migrations/
-
-# Copy seeders
-cp database/seeders/* your-project/database/seeders/
-
-# Copy config
-cp config/sanctum.php your-project/config/
-cp config/permission.php your-project/config/
-
-# Copy routes
-cp routes/api.php your-project/routes/
-```
-
-### 4. Update bootstrap/app.php (PENTING!)
-
-**Laravel 12 tidak auto-load API routes!** Update `bootstrap/app.php`:
-
-```php
-<?php
-
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
-use Spatie\Permission\Middleware\PermissionMiddleware;
-use Spatie\Permission\Middleware\RoleMiddleware;
-use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
-
-return Application::configure(basePath: dirname(__DIR__))
-    ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',  // ← Tambahkan baris ini!
-        commands: __DIR__.'/../routes/console.php',
-        health: '/up',
-    )
-    ->withMiddleware(function (Middleware $middleware): void {
-        // Register Spatie Permission middleware aliases
-        $middleware->alias([
-            'role' => RoleMiddleware::class,
-            'permission' => PermissionMiddleware::class,
-            'role_or_permission' => RoleOrPermissionMiddleware::class,
-        ]);
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
-```
-
-### 5. Update bootstrap/providers.php
-
-Tambahkan provider di `bootstrap/providers.php`:
-
-```php
-return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\RepositoryServiceProvider::class, // Add this
-];
-```
-
-### 6. Environment Setup
-
-Update `.env`:
+Pastikan sudah membuat database, lalu update `.env`:
 
 ```env
-DB_CONNECTION=sqlite
-
-# Atau gunakan MySQL
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=your_database
+DB_DATABASE=nama_database_anda
 DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-### 7. Run Migrations & Seeders
+### 3. Setup Storage & Queue
+
+Penting untuk fitur upload file dan pengiriman email.
+
+```bash
+# Link storage folder (Wajib untuk File Upload)
+php artisan storage:link
+
+# Setup Queue (Untuk email performa tinggi)
+# Di .env ubah:
+QUEUE_CONNECTION=database
+```
+
+Jika menggunakan `QUEUE_CONNECTION=database`, jalankan:
+
+```bash
+php artisan queue:table
+php artisan migrate
+```
+
+### 4. Run Migrations & Seeders
+
+Jalankan perintah ini untuk membuat tabel dan data dummy awal (User Admin & Super Admin).
 
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-### 8. Generate Application Key
+### 5. Jalankan Aplikasi
 
 ```bash
-php artisan key:generate
+php artisan serve
+# Aplikasi akan jalan di: http://localhost:8000
+# Base API URL: http://localhost:8000/api/v1
 ```
+
+Jangan lupa jalankan queue worker di terminal terpisah jika menggunakan email/jobs:
+
+```bash
+php artisan queue:work
+```
+
+---
 
 ## 🔑 Default Credentials
 
-### Super Admin
+-   **Super Admin**: `admin@example.com` / `password`
+-   **Admin**: `user@example.com` / `password`
 
--   Email: `admin@example.com`
--   Password: `password`
+---
 
-### Admin
+## 📖 Panduan Penggunaan (Usage Guide)
 
--   Email: `user@example.com`
--   Password: `password`
+### 1. File Upload (New!)
 
-## 📡 API Endpoints
+Gunakan `FileUploadService` untuk handle upload dengan aman.
 
-**📖 Untuk cara protect routes dengan role/permission, lihat [MIDDLEWARE.md](MIDDLEWARE.md)**
+```php
+use App\Services\FileUploadService;
 
-### Authentication
-
-| Method | Endpoint        | Description       | Auth Required |
-| ------ | --------------- | ----------------- | ------------- |
-| POST   | `/api/login`    | Login user        | No            |
-| POST   | `/api/register` | Register new user | No            |
-| POST   | `/api/logout`   | Logout user       | Yes           |
-| GET    | `/api/me`       | Get current user  | Yes           |
-
-### User Management
-
-| Method | Endpoint                         | Description         | Auth Required |
-| ------ | -------------------------------- | ------------------- | ------------- |
-| GET    | `/api/user`                      | Get all users       | Yes           |
-| GET    | `/api/user/all/paginated`        | Get paginated users | Yes           |
-| GET    | `/api/user/{id}`                 | Get user detail     | Yes           |
-| POST   | `/api/user`                      | Create user         | Yes           |
-| PUT    | `/api/user/{id}`                 | Update user         | Yes           |
-| DELETE | `/api/user/{id}`                 | Delete user         | Yes           |
-| PUT    | `/api/user/{id}/update-password` | Update password     | Yes           |
-
-## 🧪 Testing API
-
-### 1. Login
-
-```bash
-curl -X POST http://localhost:8000/api/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@example.com",
-    "password": "password"
-  }'
-```
-
-Response:
-
-```json
+public function updateAvatar(Request $request)
 {
-    "success": true,
-    "message": "Login successful",
-    "data": {
-        "access_token": "your-token-here",
-        "token_type": "Bearer"
+    if ($request->hasFile('avatar')) {
+        // Upload file ke folder 'avatars' di storage public
+        $path = FileUploadService::upload($request->file('avatar'), 'avatars');
+
+        // Simpan path ke database
+        $user->update(['avatar' => $path]);
     }
 }
 ```
 
-### 2. Get Current User
+### 2. Activity Logging (New!)
 
-```bash
-curl -X GET http://localhost:8000/api/me \
-  -H "Authorization: Bearer your-token-here"
-```
-
-### 3. Get All Users (Paginated)
-
-```bash
-curl -X GET "http://localhost:8000/api/user/all/paginated?search=admin&per_page=10&page=1" \
-  -H "Authorization: Bearer your-token-here"
-```
-
-## 🔨 How to Add New Module
-
-### 1. Create Migration
-
-```bash
-php artisan make:migration create_products_table
-```
-
-### 2. Create Model
-
-```bash
-php artisan make:model Product
-```
-
-Add UUID trait dan soft deletes:
+Catat aktivitas user dengan mudah menggunakan helper `ActivityLogger`.
 
 ```php
-<?php
+use App\Helpers\ActivityLogger;
 
-namespace App\Models;
+// Log aktivitas sederhana
+ActivityLogger::log('create', 'Membuat product baru');
 
-use App\Traits\UUID;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class Product extends Model
-{
-    use UUID, SoftDeletes;
-
-    protected $fillable = [
-        'name',
-        'description',
-        'price',
-    ];
-
-    public function scopeSearch($query, $search)
-    {
-        return $query->where('name', 'like', '%' . $search . '%')
-            ->orWhere('description', 'like', '%' . $search . '%');
-    }
-}
+// Log dengan detail
+ActivityLogger::log(
+    'update',
+    'Update harga product',
+    'Product', // Model name
+    $product->id, // Model ID
+    ['old_price' => 5000, 'new_price' => 6000] // Properties tambahan
+);
 ```
 
-### 3. Create Interface
+### 3. Mengirim Email dengan Queue
+
+Gunakan class `App\Mail\WelcomeMail` yang sudah implement `ShouldQueue` agar aplikasi tidak loading lama saat kirim email.
 
 ```php
-<?php
+use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Mail;
 
-namespace App\Interfaces;
-
-interface ProductRepositoryInterface
-{
-    public function index($perPage, $search);
-    public function getAllPaginated($perPage, $search);
-    public function store(array $data);
-    public function show($id);
-    public function update(array $data, $id);
-    public function destroy($id);
-}
+// Email akan dikirim di background (via Queue)
+Mail::to($user->email)->send(new WelcomeMail($user));
 ```
 
-### 4. Create Repository
+Pastikan worker jalan: `php artisan queue:work`
 
-```php
-<?php
+### 4. Menambah Module Baru (Contoh: Product)
 
-namespace App\Repositories;
+Ikuti langkah standar Repository Pattern:
 
-use App\Helpers\ResponseHelper;
-use App\Http\Resources\PaginateResource;
-use App\Http\Resources\ProductResource;
-use App\Interfaces\ProductRepositoryInterface;
-use App\Models\Product;
+1.  **Model**: `php artisan make:model Product -m`
+2.  **Repository Interface**: Buat `App/Interfaces/ProductRepositoryInterface.php`
+3.  **Repository Implementation**: Buat `App/Repositories/ProductRepository.php`
+4.  **Service Provider**: Daftarkan di `RepositoryServiceProvider` binding-nya.
+5.  **Controller**: Inject Interface ke Constructor Controller.
+6.  **Route**: Daftarkan di `routes/v1.php`
 
-class ProductRepository implements ProductRepositoryInterface
-{
-    public function index($perPage, $search)
-    {
-        $products = Product::search($search)->paginate($perPage);
-        return ResponseHelper::success(
-            ProductResource::collection($products),
-            'Products retrieved successfully'
-        );
-    }
+---
 
-    public function getAllPaginated($perPage, $search)
-    {
-        $products = Product::search($search)->paginate($perPage);
-        return ResponseHelper::success(
-            new PaginateResource($products, ProductResource::class),
-            'Products retrieved successfully'
-        );
-    }
+## 🏗️ Project Structure
 
-    public function store(array $data)
-    {
-        $product = Product::create($data);
-        return ResponseHelper::success(
-            new ProductResource($product),
-            'Product created successfully',
-            201
-        );
-    }
-
-    public function show($id)
-    {
-        $product = Product::findOrFail($id);
-        return ResponseHelper::success(
-            new ProductResource($product),
-            'Product retrieved successfully'
-        );
-    }
-
-    public function update(array $data, $id)
-    {
-        $product = Product::findOrFail($id);
-        $product->update($data);
-        return ResponseHelper::success(
-            new ProductResource($product),
-            'Product updated successfully'
-        );
-    }
-
-    public function destroy($id)
-    {
-        $product = Product::findOrFail($id);
-        $product->delete();
-        return ResponseHelper::success(null, 'Product deleted successfully');
-    }
-}
 ```
-
-### 5. Register di RepositoryServiceProvider
-
-```php
-$this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
-```
-
-### 6. Create Controller
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Http\Requests\Product\ProductStoreRequest;
-use App\Http\Requests\Product\ProductUpdateRequest;
-use App\Interfaces\ProductRepositoryInterface;
-use Illuminate\Http\Request;
-
-class ProductController extends Controller
-{
-    private ProductRepositoryInterface $productRepository;
-
-    public function __construct(ProductRepositoryInterface $productRepository)
-    {
-        $this->productRepository = $productRepository;
-    }
-
-    public function index(Request $request)
-    {
-        $perPage = $request->query('per_page', 10);
-        $search = $request->query('search', '');
-        return $this->productRepository->index($perPage, $search);
-    }
-
-    public function getAllPaginated(Request $request)
-    {
-        $perPage = $request->query('per_page', 10);
-        $search = $request->query('search', '');
-        return $this->productRepository->getAllPaginated($perPage, $search);
-    }
-
-    public function store(ProductStoreRequest $request)
-    {
-        return $this->productRepository->store($request->validated());
-    }
-
-    public function show($id)
-    {
-        return $this->productRepository->show($id);
-    }
-
-    public function update(ProductUpdateRequest $request, $id)
-    {
-        return $this->productRepository->update($request->validated(), $id);
-    }
-
-    public function destroy($id)
-    {
-        return $this->productRepository->destroy($id);
-    }
-}
-```
-
-### 7. Create Form Requests
-
-```bash
-php artisan make:request Product/ProductStoreRequest
-php artisan make:request Product/ProductUpdateRequest
-```
-
-### 8. Create Resource
-
-```bash
-php artisan make:resource ProductResource
-```
-
-### 9. Add Routes
-
-```php
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('product', ProductController::class);
-    Route::get('/product/all/paginated', [ProductController::class, 'getAllPaginated']);
-});
+app/
+├── Helpers/
+│   └── ActivityLogger.php   # Helper logging
+├── Services/
+│   └── FileUploadService.php # Service upload
+├── Http/
+│   ├── Controllers/
+│   ├── Requests/
+│   └── Resources/
+├── Interfaces/             # Contracts
+├── Repositories/           # Business Logic
+├── Models/
+├── Traits/
+└── Providers/
 ```
 
 ## 🎯 Best Practices
 
-1. **Always use Repository Pattern** - Jangan taruh business logic di controller
-2. **Use Form Requests** - Validasi terpisah dari controller
-3. **Use API Resources** - Format response yang konsisten
-4. **Use UUID** - Lebih secure dari auto-increment
-5. **Use Soft Deletes** - Data integrity
-6. **Use Search Scope** - Reusable search logic
-7. **Use ResponseHelper** - Konsisten response format
-
-## 🔒 Security
-
--   CORS sudah dikonfigurasi
--   Sanctum untuk API authentication
--   Password di-hash otomatis
--   Token expiration bisa diatur di config/sanctum.php
--   Soft deletes untuk data integrity
-
-## 📝 Response Format
-
-### Success Response
-
-```json
-{
-    "success": true,
-    "message": "Operation successful",
-    "data": {
-        // your data here
-    }
-}
-```
-
-### Error Response
-
-```json
-{
-    "success": false,
-    "message": "Error message",
-    "errors": {
-        "field": ["error detail"]
-    }
-}
-```
-
-### Paginated Response
-
-```json
-{
-  "success": true,
-  "message": "Data retrieved successfully",
-  "data": {
-    "data": [...],
-    "current_page": 1,
-    "last_page": 10,
-    "per_page": 10,
-    "total": 100,
-    "from": 1,
-    "to": 10
-  }
-}
-```
-
-## 🤝 Contributing
-
-Jika ingin menambahkan fitur atau memperbaiki bug, silakan buat pull request.
+1.  **Production Readiness**:
+    -   Selalu gunakan `QUEUE_CONNECTION=redis` atau `database` di production.
+    -   Jangan lupa `php artisan config:cache` dan `route:cache` saat deploy.
+2.  **Security**:
+    -   Gunakan `Sanctum` untuk token API.
+    -   Validasikan input user dengan `FormRequest`.
 
 ## 📄 License
 
 MIT License
-
-## 👨‍💻 Author
-
-Created with ❤️ by Aradea
 
 ---
 

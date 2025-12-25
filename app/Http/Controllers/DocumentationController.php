@@ -15,17 +15,30 @@ class DocumentationController extends Controller
         $this->docsPath = base_path();
 
         // List semua dokumentasi yang tersedia
+        // List semua dokumentasi yang tersedia
         $this->docs = [
-            'complete-guide' => [
-                'title' => 'Complete Guide (START HERE!)',
-                'file' => 'COMPLETE-GUIDE.md',
-                'icon' => '🎓',
+            'readme' => [
+                'title' => 'Introduction (Read Me)',
+                'file' => 'README.md',
+                'icon' => '👋',
+                'category' => 'Getting Started'
+            ],
+            'frontend' => [
+                'title' => 'Frontend Guide (Vue.js)',
+                'file' => 'FRONTEND.md',
+                'icon' => '🖥️',
                 'category' => 'Getting Started'
             ],
             'installation' => [
                 'title' => 'Installation Guide',
                 'file' => 'INSTALLATION.md',
                 'icon' => '📥',
+                'category' => 'Getting Started'
+            ],
+            'guide' => [
+                'title' => 'Quick Start Guide',
+                'file' => 'GUIDE.md',
+                'icon' => '🎯',
                 'category' => 'Getting Started'
             ],
             'validation-flow' => [
@@ -38,13 +51,7 @@ class DocumentationController extends Controller
                 'title' => 'File Structure',
                 'file' => 'STRUCTURE.md',
                 'icon' => '📂',
-                'category' => 'Getting Started'
-            ],
-            'guide' => [
-                'title' => 'Quick Start Guide',
-                'file' => 'GUIDE.md',
-                'icon' => '🎯',
-                'category' => 'Getting Started'
+                'category' => 'Architecture'
             ],
             'middleware' => [
                 'title' => 'Middleware & Permissions',

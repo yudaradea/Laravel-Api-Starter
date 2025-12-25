@@ -146,11 +146,11 @@ php artisan route:list
 **Harus muncul routes dengan prefix `/api`:**
 
 ```plaintext
-POST   api/login
-POST   api/register
-GET    api/me
-POST   api/logout
-GET    api/user
+POST   api/v1/login
+POST   api/v1/register
+GET    api/v1/me
+POST   api/v1/logout
+GET    api/v1/user
 ...
 ```
 
@@ -167,7 +167,7 @@ Server akan running di: `http://localhost:8000`
 #### Test Login
 
 ```bash
-curl -X POST http://localhost:8000/api/login \
+curl -X POST http://localhost:8000/api/v1/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@example.com",
@@ -197,7 +197,7 @@ curl -X POST http://localhost:8000/api/login \
 #### Test Get Current User
 
 ```bash
-curl -X GET http://localhost:8000/api/me \
+curl -X GET http://localhost:8000/api/v1/me \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
