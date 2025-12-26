@@ -56,6 +56,12 @@ const router = createRouter({
                     component: AdminUserCreateView,
                     meta: { requiresAdmin: true },
                 },
+                {
+                    path: "roles",
+                    name: "role-list",
+                    component: () => import("../views/RoleManagerView.vue"),
+                    meta: { requiresSuperAdmin: true },
+                },
             ],
         },
     ],
@@ -79,6 +85,11 @@ router.beforeEach(async (to, from, next) => {
 
     // Admin Check
     if (to.meta.requiresAdmin && !authStore.isAdmin) {
+        return next("/dashboard"); // Unauthorized redirect
+    }
+
+    // Super Admin Check
+    if (to.meta.requiresSuperAdmin && !authStore.isSuperAdmin) {
         return next("/dashboard"); // Unauthorized redirect
     }
 

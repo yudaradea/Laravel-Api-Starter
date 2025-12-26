@@ -1,74 +1,82 @@
-# 📦 Installation Guide - Step by Step
+# 📦 Panduan Instalasi (Installation Guide)
 
-Panduan lengkap instalasi Laravel API Starter Pack dari awal sampai running.
+Panduan lengkap instalasi Laravel API Starter Pack dari awal hingga running di local environment Anda.
 
-## ✅ Requirements
+## ✅ Persyaratan Sistem (Requirements)
 
--   PHP >= 8.2
--   Composer
--   MySQL >= 8.0 atau SQLite
--   Git (optional)
+Sebelum memulai, pastikan sistem Anda memenuhi persyaratan berikut:
 
-## 🚀 Method 1: Fresh Install (Recommended)
+-   **PHP**: Versi 8.2 atau lebih baru
+-   **Composer**: Dependency Manager untuk PHP
+-   **Database**: MySQL >= 8.0 atau SQLite (untuk development cepat)
+-   **Git**: Untuk cloning repository (opsional)
+-   **Node.js & NPM**: Untuk menjalankan frontend (opsional)
 
-### Step 1: Create New Laravel Project
+---
+
+## 🚀 Metode 1: Instalasi Fresh (Direkomendasikan)
+
+Metode ini paling bersih karena kita membuat project Laravel baru lalu menimpa file-filenya dengan Starter Pack.
+
+### Langkah 1: Buat Project Laravel Baru
+
+Jalankan perintah berikut di terminal:
 
 ```bash
 composer create-project laravel/laravel my-api-project
 cd my-api-project
 ```
 
-### Step 2: Install Dependencies
+### Langkah 2: Install Dependencies Wajib
+
+Kita perlu menginstall package yang digunakan oleh Starter Pack:
 
 ```bash
+# Untuk Authentication
 composer require laravel/sanctum
+
+# Untuk Role & Permission Management
 composer require spatie/laravel-permission
 ```
 
-### Step 3: Extract Starter Pack
+### Langkah 3: Extract & Copy Starter Pack
 
-Extract `laravel-api-starter.zip` yang sudah didownload.
+1. Extract file `laravel-api-starter.zip` yang Anda miliki.
+2. Salin folder/file dari Starter Pack ke dalam folder `my-api-project`.
 
-### Step 4: Copy Files
+**Cara Copy (Manual):**
+Copy dan Timpa (Overwrite) folder/file berikut:
+
+-   Folder `app/` -> timpa ke `app/`
+-   Folder `database/` -> timpa ke `database/`
+-   Folder `routes/` -> timpa ke `routes/`
+-   Folder `bootstrap/` -> timpa ke `bootstrap/`
+-   Folder `config/` -> timpa ke `config/`
+
+**Cara Copy (Terminal/Bash):**
 
 ```bash
-# From your extracted folder location
-cd /path/to/laravel-api-starter
-
-# Copy app files
+# Asumsi Anda berada di folder yang berisi ekstrak starter pack
 cp -r app/* /path/to/my-api-project/app/
-
-# Copy database files
 cp -r database/migrations/* /path/to/my-api-project/database/migrations/
 cp -r database/seeders/* /path/to/my-api-project/database/seeders/
-
-# Copy routes
 cp routes/api.php /path/to/my-api-project/routes/
-
-# Copy bootstrap
+cp routes/v1.php /path/to/my-api-project/routes/
 cp bootstrap/app.php /path/to/my-api-project/bootstrap/
 cp bootstrap/providers.php /path/to/my-api-project/bootstrap/
-
-# Copy config
 cp config/sanctum.php /path/to/my-api-project/config/
 cp config/permission.php /path/to/my-api-project/config/
-
-# Copy .env.example (optional, untuk reference)
-cp .env.example /path/to/my-api-project/.env.starter-example
 ```
 
-### Step 5: Configure Database
+### Langkah 4: Konfigurasi Database
 
-#### Option A: MySQL
+Anda bisa memilih menggunakan MySQL atau SQLite.
 
-1.Create database:
+#### Opsi A: MySQL (Standard Production)
 
-```sql
-CREATE DATABASE my_api_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-<br/>
-2.Update `.env`:
+1. Buat database baru di MySQL (misal via phpMyAdmin atau HeidiSQL): `my_api_db`.
+2. Duplikasi file `.env.example` menjadi `.env`.
+3. Edit file `.env` dan sesuaikan koneksi database:
 
 ```env
 DB_CONNECTION=mysql
@@ -76,37 +84,35 @@ DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=my_api_db
 DB_USERNAME=root
-DB_PASSWORD=your_password
+DB_PASSWORD=password_database_anda
 ```
 
-#### Option B: SQLite (Easier for development)
+#### Opsi B: SQLite (Cepat & Mudah untuk Dev)
 
-1.Create database file:
+1. Buat file kosong bernama `database.sqlite` di dalam folder `database`.
 
 ```bash
 touch database/database.sqlite
+# Atau di Windows Command Prompt:
+# type nul > database/database.sqlite
 ```
 
-<br/>
-2.Update `.env`:
+2. Edit file `.env`:
 
 ```env
 DB_CONNECTION=sqlite
-# Comment these out:
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=laravel
-# DB_USERNAME=root
-# DB_PASSWORD=
+# DB_HOST=... (Hapus atau komentari baris koneksi DB lainnya)
 ```
 
-### Step 6: Generate Application Key
+### Langkah 5: Generate Application Key
 
 ```bash
 php artisan key:generate
 ```
 
-### Step 7: Clear Cache
+### Langkah 6: Bersihkan Cache (Penting)
+
+Karena kita baru saja mengubah konfigurasi, pastikan cache bersih:
 
 ```bash
 php artisan config:clear
@@ -114,57 +120,70 @@ php artisan cache:clear
 php artisan route:clear
 ```
 
-### Step 8: Run Migrations
+### Langkah 7: Link Storage
+
+Agar fitur upload file berfungsi (avatar, dokumen, dll):
+
+```bash
+php artisan storage:link
+```
+
+### Langkah 8: Migrasi Database & Seeding
+
+Perintah ini akan membuat tabel-tabel di database dan mengisi data awal (seperti Role Admin & User).
 
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-**Output yang benar:**
+**Indikasi Sukses:**
+Anda akan melihat output seperti `Migrated: ...` dan `Seeded: Database\Seeders\RoleSeeder`.
 
-```plaintext
-Migration table created successfully.
-Migrating: 0001_01_01_000000_create_users_table
-Migrated:  0001_01_01_000000_create_users_table (XXX ms)
-Migrating: 2025_01_01_000001_create_personal_access_tokens_table
-Migrated:  2025_01_01_000001_create_personal_access_tokens_table (XXX ms)
-Migrating: 2025_01_01_000002_create_permission_tables
-Migrated:  2025_01_01_000002_create_permission_tables (XXX ms)
+### Langkah 9: Verifikasi Instalasi
 
-Seeding: Database\Seeders\RoleSeeder
-Seeded:  Database\Seeders\RoleSeeder (XXX ms)
-Seeding: Database\Seeders\UserSeeder
-Seeded:  Database\Seeders\UserSeeder (XXX ms)
-```
-
-### Step 9: Verify Routes
+Cek daftar route untuk memastikan API sudah terdaftar:
 
 ```bash
 php artisan route:list
 ```
 
-**Harus muncul routes dengan prefix `/api`:**
+Anda harusnya melihat banyak route dengan prefix `api/v1/`.
 
-```plaintext
-POST   api/v1/login
-POST   api/v1/register
-GET    api/v1/me
-POST   api/v1/logout
-GET    api/v1/user
-...
-```
-
-### Step 10: Start Server
+### Langkah 10: Jalankan Server
 
 ```bash
 php artisan serve
 ```
 
-Server akan running di: `http://localhost:8000`
+Akses aplikasi di: `http://localhost:8000`.
 
-### Step 11: Test API
+---
 
-#### Test Login
+## 🎯 Metode 2: Menggunakan Install Script (Unix/Linux/Mac)
+
+Jika Anda menggunakan OS berbasis Unix, Anda bisa menggunakan script otomatis.
+
+```bash
+# 1. Extract zip
+unzip laravel-api-starter.zip
+cd laravel-api-starter
+
+# 2. Beri izin eksekusi
+chmod +x install.sh
+
+# 3. Jalankan script
+./install.sh nama-project-anda
+```
+
+Script ini akan otomatis melakukan clone, install dependency, setup database SQLite, dan seeding.
+
+---
+
+## 🧪 Cara Testing API
+
+Setelah server berjalan, Anda bisa mengetesnya.
+
+### Test Login (cURL)
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/login \
@@ -175,138 +194,45 @@ curl -X POST http://localhost:8000/api/v1/login \
   }'
 ```
 
-**Expected Response:**
+Jika berhasil, Anda akan mendapatkan respon JSON berisi `access_token`.
 
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "access_token": "1|xxxxx...",
-    "token_type": "Bearer",
-    "user": {
-      "id": "xxx-xxx-xxx",
-      "name": "Super Admin",
-      "email": "admin@example.com",
-      ...
-    }
-  }
-}
-```
+---
 
-#### Test Get Current User
+## ⚠️ Masalah Umum (Troubleshooting)
 
-```bash
-curl -X GET http://localhost:8000/api/v1/me \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
-```
+### 1. Routes Tidak Muncul di `php artisan route:list`
 
-## 🎯 Method 2: Using Installation Script
-
-### Step 1: Extract Starter Pack
-
-```bash
-unzip laravel-api-starter.zip
-cd laravel-api-starter
-```
-
-### Step 2: Make Script Executable
-
-```bash
-chmod +x install.sh
-```
-
-### Step 3: Run Installation
-
-```bash
-./install.sh my-api-project
-```
-
-The script will:
-
--   Create new Laravel project
--   Install dependencies
--   Copy all files
--   Setup database (SQLite)
--   Run migrations & seeders
--   Generate app key
-
-### Step 4: Start Server
-
-```bash
-cd my-api-project
-php artisan serve
-```
-
-## 🔍 Verification Checklist
-
-After installation, verify:
-
--   [ ] `php artisan route:list` shows API routes
--   [ ] Can login via API
--   [ ] Token authentication works
--   [ ] Database tables created
--   [ ] Default users seeded
-
-## ⚠️ Common Issues
-
-### Issue 1: Routes not showing
-
-**Solution:** Check `bootstrap/app.php` has:
+**Solusi:** Cek file `bootstrap/app.php`. Pastikan baris ini ada:
 
 ```php
 api: __DIR__.'/../routes/api.php',
 ```
 
-### Issue 2: "Field 'id' doesn't have a default value"
+### 2. Error "Field 'id' doesn't have a default value"
 
-**Solution:** Check `app/Providers/AppServiceProvider.php`:
+**Solusi:** Ini biasanya karena masalah `PersonalAccessToken`. Cek `app/Providers/AppServiceProvider.php` dan pastikan `Sanctum::usePersonalAccessTokenModel(...)` ada di method `boot()`.
 
-```php
-public function boot(): void
-{
-    Sanctum::usePersonalAccessTokenModel(\App\Models\PersonalAccessToken::class);
-}
-```
+### 3. Error "Target [AuthRepositoryInterface] is not instantiable"
 
-### Issue 3: "Target [AuthRepositoryInterface] is not instantiable"
+**Solusi:** Anda belum mendaftarkan Repository di Provider. Cek `bootstrap/providers.php` dan pastikan `App\Providers\RepositoryServiceProvider::class` terdaftar.
 
-**Solution:** Check `bootstrap/providers.php`:
+### 4. Permission Denied pada SQLite
 
-```php
-return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\RepositoryServiceProvider::class,
-];
-```
-
-### Issue 4: Permission denied on database/database.sqlite
-
-**Solution:**
+**Solusi:** Berikan izin tulis ke folder database:
 
 ```bash
 chmod 664 database/database.sqlite
 chmod 775 database
 ```
 
-### Issue 5: SQLSTATE connection refused
+---
 
-**Solution:**
+## 📚 Langkah Selanjutnya
 
--   MySQL: Make sure MySQL server is running
--   SQLite: Make sure `database/database.sqlite` file exists
-
-## 📖 Next Steps
-
-1. Read [MIDDLEWARE.md](MIDDLEWARE.md) to learn about role & permission
-2. Read [GUIDE.md](GUIDE.md) to learn how to create new modules
-3. Import `postman_collection.json` to test all endpoints
-4. Customize roles & permissions in `database/seeders/RoleSeeder.php`
-
-## 🆘 Need Help?
-
-Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common problems and solutions.
+1. Pelajari **[GUIDE.md](GUIDE.md)** untuk cara membuat modul baru.
+2. Pelajari **[ROLES-AND-PERMISSIONS.md](ROLES-AND-PERMISSIONS.md)** untuk manajemen hak akses.
+3. Import `postman_collection.json` ke Postman untuk testing lengkap.
 
 ---
 
-**Happy Coding! 🚀**
+**Selamat Coding! 🚀**

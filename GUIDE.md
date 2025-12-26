@@ -1,84 +1,24 @@
-# 🚀 Quick Start Guide
+# 🚀 Panduan Pengembangan Cepat (Quick Start Guide)
 
-## Cara Cepat Menggunakan Starter Pack
+Panduan ini ditujukan untuk developer yang ingin menambahkan fitur atau modul baru ke dalam aplikasi ini menggunakan Repository Pattern yang sudah disediakan.
 
-### Metode 1: Manual Installation
+---
 
-```bash
-# 1. Create Laravel project
-composer create-project laravel/laravel my-api-project
-cd my-api-project
+## 🏗️ Cara Membuat Module Baru
 
-# 2. Install dependencies
-composer require laravel/sanctum
-composer require spatie/laravel-permission
+Katakanlah kita ingin membuat fitur manajemen **Produk (Product)**. Berikut adalah langkah-langkah standarnya.
 
-# 3. Copy all files from starter pack
-cp -r /path/to/starter-pack/app/* app/
-cp -r /path/to/starter-pack/database/* database/
-cp /path/to/starter-pack/routes/v1.php routes/
-cp /path/to/starter-pack/config/*.php config/
+### Langkah 1: Buat Model & Migration
 
-# 4. Update bootstrap/providers.php
-# Add this line:
-# App\Providers\RepositoryServiceProvider::class,
-
-# 5. Setup database
-touch database/database.sqlite
-
-# 6. Update .env
-DB_CONNECTION=sqlite
-
-# 7. Run migrations and seeders
-php artisan migrate:fresh --seed
-
-# 8. Start server
-php artisan serve
-```
-
-### Metode 2: Using Installation Script
+Jalankan perintah Artisan untuk membuat Model beserta file migrasinya.
 
 ```bash
-# Give permission
-chmod +x install.sh
-
-# Run installation
-./install.sh my-api-project
+php artisan make:model Product -m
 ```
 
-## Testing API
+**Edit Model `app/Models/Product.php`:**
 
-### 1. Import Postman Collection
-
-Import `postman_collection.json` ke Postman
-
-### 2. Test Login
-
-```bash
-curl -X POST http://localhost:8000/api/v1/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@example.com",
-    "password": "password"
-  }'
-```
-
-### 3. Get Current User
-
-```bash
-curl -X GET http://localhost:8000/api/me \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
-## Module Generator
-
-Untuk mempercepat pembuatan module baru, gunakan template berikut:
-
-### 1. Create Model
-
-```bash
-php artisan make:model Product
-```
+Kita menggunakan Trait `UUID` agar primary key otomatis menjadi UUID, dan `SoftDeletes` agar data tidak langsung hilang saat dihapus.
 
 ```php
 <?php
@@ -100,6 +40,7 @@ class Product extends Model
         'stock',
     ];
 
+    // Scope untuk fitur pencarian
     public function scopeSearch($query, $search)
     {
         if (empty($search)) {
@@ -114,17 +55,13 @@ class Product extends Model
 }
 ```
 
-### 2. Create Migration
-
-```bash
-php artisan make:migration create_products_table
-```
+**Edit Migration `database/migrations/xxxx_xx_xx_create_products_table.php`:**
 
 ```php
 public function up(): void
 {
     Schema::create('products', function (Blueprint $table) {
-        $table->uuid('id')->primary();
+        $table->uuid('id')->primary(); // PENTING: Gunakan UUID
         $table->string('name');
         $table->text('description')->nullable();
         $table->decimal('price', 10, 2);
@@ -135,7 +72,15 @@ public function up(): void
 }
 ```
 
-### 3. Create Interface
+Jalankan migrasi:
+
+```bash
+php artisan migrate
+```
+
+### Langkah 2: Buat Interface Repository
+
+Buat file baru di `app/Interfaces/ProductRepositoryInterface.php`. Ini berfungsi sebagai kontrak agar kode kita rapi dan mudah di-testing.
 
 ```php
 <?php
@@ -153,7 +98,9 @@ interface ProductRepositoryInterface
 }
 ```
 
-### 4. Create Repository
+### Langkah 3: Buat Repository Implementation
+
+Buat file baru di `app/Repositories/ProductRepository.php`. Di sinilah logika database disimpan.
 
 ```php
 <?php
@@ -180,6 +127,7 @@ class ProductRepository implements ProductRepositoryInterface
     public function getAllPaginated($perPage, $search)
     {
         $products = Product::search($search)->paginate($perPage);
+        // Menggunakan PaginateResource untuk format response yang konsisten
         return ResponseHelper::success(
             new PaginateResource($products, ProductResource::class),
             'Products retrieved successfully'
@@ -227,13 +175,67 @@ class ProductRepository implements ProductRepositoryInterface
 }
 ```
 
-### 5. Register in RepositoryServiceProvider
+### Langkah 4: Daftarkan Repository
+
+Agar Laravel tahu bahwa `ProductRepositoryInterface` harus menggunakan `ProductRepository`, daftarkan di `app/Providers/RepositoryServiceProvider.php`.
 
 ```php
+// Di dalam method register()
 $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
 ```
 
-### 6. Create Controller
+### Langkah 5: Buat Form Request (Validasi)
+
+Untuk menjaga Controller tetap bersih, buat class validasi terpisah.
+
+```bash
+php artisan make:request Product/ProductStoreRequest
+php artisan make:request Product/ProductUpdateRequest
+```
+
+**Contoh `ProductStoreRequest`:**
+
+```php
+public function rules(): array
+{
+    return [
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'description' => 'nullable|string',
+    ];
+}
+```
+
+### Langkah 6: Buat API Resource (Transformasi Output)
+
+Agar format JSON yang dikembalikan seragam.
+
+```bash
+php artisan make:resource ProductResource
+```
+
+```php
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->id,
+        'name' => $this->name,
+        'price_formatted' => 'Rp ' . number_format($this->price, 0, ',', '.'),
+        'price' => $this->price,
+        'stock' => $this->stock,
+        // ... field lainnya
+    ];
+}
+```
+
+### Langkah 7: Buat Controller
+
+Terakhir, buat Controller untuk menghubungkan semuanya.
+
+```bash
+php artisan make:controller ProductController --api
+```
 
 ```php
 <?php
@@ -249,9 +251,16 @@ class ProductController extends Controller
 {
     private ProductRepositoryInterface $productRepository;
 
+    // Dependency Injection Repository
     public function __construct(ProductRepositoryInterface $productRepository)
     {
         $this->productRepository = $productRepository;
+
+        // Setup Permission Middleware (Opsional tapi Recommended)
+        $this->middleware('permission:view products')->only(['index', 'show']);
+        $this->middleware('permission:create products')->only('store');
+        $this->middleware('permission:edit products')->only('update');
+        $this->middleware('permission:delete products')->only('destroy');
     }
 
     public function index(Request $request)
@@ -259,13 +268,6 @@ class ProductController extends Controller
         $perPage = $request->query('per_page', 10);
         $search = $request->query('search', '');
         return $this->productRepository->index($perPage, $search);
-    }
-
-    public function getAllPaginated(Request $request)
-    {
-        $perPage = $request->query('per_page', 10);
-        $search = $request->query('search', '');
-        return $this->productRepository->getAllPaginated($perPage, $search);
     }
 
     public function store(ProductStoreRequest $request)
@@ -290,61 +292,27 @@ class ProductController extends Controller
 }
 ```
 
-### 7. Create Form Requests
+### Langkah 8: Daftarkan Route
 
-```bash
-php artisan make:request Product/ProductStoreRequest
-php artisan make:request Product/ProductUpdateRequest
-```
-
-### 8. Create Resource
-
-```bash
-php artisan make:resource ProductResource
-```
-
-```php
-<?php
-
-namespace App\Http\Resources;
-
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
-
-class ProductResource extends JsonResource
-{
-    public function toArray(Request $request): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'price' => $this->price,
-            'stock' => $this->stock,
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
-        ];
-    }
-}
-```
-
-### 9. Add Routes
-
-Buka `routes/v1.php` dan tambahkan:
+Buka `routes/v1.php`:
 
 ```php
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::apiResource('product', ProductController::class);
-    Route::get('/product/all/paginated', [ProductController::class, 'getAllPaginated']);
 });
 ```
 
-## Tips & Tricks
+Selesai! Anda sudah memiliki module API `Products` yang lengkap, aman, dan terstandarisasi.
 
-### 1. Caching
+---
+
+## 🛠️ Tips & Trik Pengembangan
+
+### 1. Menggunakan Caching
+
+Untuk performa tinggi, gunakan caching di Repository.
 
 ```php
-// In your repository
 use Illuminate\Support\Facades\Cache;
 
 public function index($perPage, $search)
@@ -352,6 +320,7 @@ public function index($perPage, $search)
     $cacheKey = "products_{$perPage}_{$search}";
 
     return Cache::remember($cacheKey, 3600, function () use ($perPage, $search) {
+        // Query database yang berat
         $products = Product::search($search)->paginate($perPage);
         return ResponseHelper::success(
             ProductResource::collection($products),
@@ -361,132 +330,35 @@ public function index($perPage, $search)
 }
 ```
 
-### 2. File Upload
+### 2. File Upload Service
+
+Gunakan `FileUploadService` untuk menangani upload gambar dengan mudah.
 
 ```php
-// In your repository
-public function store(array $data)
-{
-    if (isset($data['image'])) {
-        $data['image'] = $data['image']->store('products', 'public');
-    }
+use App\Services\FileUploadService;
 
-    $product = Product::create($data);
-    return ResponseHelper::success(
-        new ProductResource($product),
-        'Product created successfully',
-        201
-    );
+// Di Repository
+if (isset($data['image'])) {
+    // Upload akan masuk ke storage/app/public/products/{hash}.jpg
+    $data['image'] = FileUploadService::upload($data['image'], 'products');
 }
 ```
 
-### 3. Relationships
+### 3. Debugging
 
-```php
-// In your repository
-public function index($perPage, $search)
-{
-    $products = Product::with(['category', 'supplier'])
-        ->search($search)
-        ->paginate($perPage);
-
-    return ResponseHelper::success(
-        ProductResource::collection($products),
-        'Products retrieved successfully'
-    );
-}
-```
-
-### 4. Middleware Permission
-
-```php
-// In your route - Protect by role
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::apiResource('product', ProductController::class);
-});
-
-// Protect by permission
-Route::middleware(['auth:sanctum', 'permission:view products'])->group(function () {
-    Route::get('/product', [ProductController::class, 'index']);
-});
-
-// Protect by role OR permission
-Route::middleware(['auth:sanctum', 'role_or_permission:admin|view products'])->group(function () {
-    Route::get('/product', [ProductController::class, 'index']);
-});
-
-// Or in controller constructor
-public function __construct(ProductRepositoryInterface $productRepository)
-{
-    $this->productRepository = $productRepository;
-
-    // Apply middleware to specific methods
-    $this->middleware('permission:view products')->only(['index', 'show']);
-    $this->middleware('permission:create products')->only('store');
-    $this->middleware('permission:edit products')->only('update');
-    $this->middleware('permission:delete products')->only('destroy');
-}
-
-// Check in code
-if ($user->hasRole('admin')) {
-    // Do something
-}
-
-if ($user->hasPermissionTo('edit products')) {
-    // Do something
-}
-
-// Multiple roles/permissions
-if ($user->hasAnyRole(['admin', 'super-admin'])) {
-    // Do something
-}
-
-if ($user->hasAllPermissions(['edit products', 'delete products'])) {
-    // Do something
-}
-```
-
-## Troubleshooting
-
-### Error: Class not found
+Jika ada masalah, gunakan perintah ini:
 
 ```bash
-composer dump-autoload
-```
-
-### Error: SQLSTATE connection refused
-
-```bash
-# Check .env database configuration
-# For SQLite, make sure database file exists
-touch database/database.sqlite
-```
-
-### Error: Token mismatch
-
-```bash
+# Bersihkan cache config
 php artisan config:clear
-php artisan cache:clear
-```
 
-## Additional Commands
+# Dump autoload composer (jika class tidak ditemukan)
+composer dump-autoload
 
-```bash
-# Clear all cache
-php artisan optimize:clear
-
-# Generate IDE helper
-composer require --dev barryvdh/laravel-ide-helper
-php artisan ide-helper:generate
-
-# Code formatting
-composer require --dev laravel/pint
-./vendor/bin/pint
-
-# Testing
-php artisan test
+# Cek list route
+php artisan route:list
 ```
 
 ---
 
-Happy Coding! 🚀
+Selamat Berkarya! 🚀

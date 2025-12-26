@@ -24,6 +24,8 @@ class AuthRepository implements AuthRepositoryInterface
         }
 
         $user = Auth::user();
+        $user->load('profile', 'roles.permissions');
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return ResponseHelper::success([
@@ -49,6 +51,17 @@ class AuthRepository implements AuthRepositoryInterface
 
         // Assign default role
         $user->assignRole('user');
+
+        // Create empty profile
+        $user->profile()->create([
+            'phone' => null,
+            'address' => null,
+            'bio' => null,
+            'avatar' => null,
+        ]);
+
+        // Load profile for response
+        $user->load('profile', 'roles.permissions');
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -79,11 +92,33 @@ class AuthRepository implements AuthRepositoryInterface
     public function me()
     {
         $user = Auth::user();
-        $user->load('roles.permissions');
+        $user->load('roles.permissions', 'profile');
 
         return ResponseHelper::success(
             new UserResource($user),
             'User retrieved successfully'
         );
+    }
+
+    /**
+     * Change user password
+     *
+     * @param array $data
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changePassword(array $data)
+    {
+        $user = Auth::user();
+
+        // Verify current password
+        if (!Hash::check($data['current_password'], $user->password)) {
+            return ResponseHelper::error('Current password is incorrect', null, 401);
+        }
+
+        // Update password
+        $user->password = Hash::make($data['password']);
+        $user->save();
+
+        return ResponseHelper::success(null, 'Password changed successfully');
     }
 }

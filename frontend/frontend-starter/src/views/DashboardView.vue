@@ -33,13 +33,14 @@ const handleLogout = async () => {
                 </router-link>
 
                 <div
-                    v-if="authStore.isAdmin"
-                    class="mt-8 uppercase text-xs text-gray-400 font-semibold px-4 mb-2"
+                    class="pt-4 pb-2 text-white text-sm font-semibold"
+                    v-if="authStore.isSuperAdmin || authStore.isAdmin"
                 >
-                    Admin
+                    ----- Admin -----
                 </div>
+
                 <router-link
-                    v-if="authStore.isAdmin"
+                    v-if="authStore.isAdmin || authStore.isSuperAdmin"
                     to="/dashboard/users"
                     class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
                     active-class="bg-gray-700"
@@ -47,12 +48,20 @@ const handleLogout = async () => {
                     Users List
                 </router-link>
                 <router-link
-                    v-if="authStore.isAdmin"
+                    v-if="authStore.isAdmin || authStore.isSuperAdmin"
                     to="/dashboard/users/create"
                     class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
                     active-class="bg-gray-700"
                 >
                     Create User
+                </router-link>
+                <router-link
+                    v-if="authStore.isSuperAdmin"
+                    to="/dashboard/roles"
+                    class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-white"
+                    active-class="bg-gray-700"
+                >
+                    Roles & Permissions
                 </router-link>
             </nav>
         </div>
@@ -68,10 +77,23 @@ const handleLogout = async () => {
                         >Welcome, {{ authStore.user?.name }}</span
                     >
                     <span
-                        v-if="authStore.isAdmin"
-                        class="ml-2 px-2 py-0.5 text-xs bg-indigo-100 text-indigo-800 rounded-full"
-                        >Admin</span
+                        :class="
+                            authStore.isSuperAdmin
+                                ? 'text-indigo-600'
+                                : authStore.isAdmin
+                                ? 'text-blue-600'
+                                : 'text-gray-600'
+                        "
+                        class="ml-2 font-semibold"
                     >
+                        {{
+                            authStore.isSuperAdmin
+                                ? "Super Admin"
+                                : authStore.isAdmin
+                                ? "Admin"
+                                : ""
+                        }}
+                    </span>
                 </div>
                 <button
                     @click="handleLogout"

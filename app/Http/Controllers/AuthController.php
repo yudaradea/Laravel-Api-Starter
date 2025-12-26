@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\LoginStoreRequest;
 use App\Http\Requests\RegisterStoreRequest;
 use App\Interfaces\AuthRepositoryInterface;
@@ -45,5 +46,13 @@ class AuthController extends Controller
     public function me()
     {
         return $this->authRepository->me();
+    }
+
+    /**
+     * Change password
+     */
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        return $this->authRepository->changePassword($request->validated());
     }
 }

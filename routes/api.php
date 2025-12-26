@@ -30,6 +30,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     // Sensitive operations (dengan rate limit lebih ketat)
     Route::middleware('throttle:sensitive')->group(function () {
+        Route::post('/change-password', [AuthController::class, 'changePassword'])->name('change-password');
         Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword']);
         Route::delete('/user/{id}', [UserController::class, 'destroy']);
     });
@@ -37,6 +38,10 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Profile Routes
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show']);
     Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update']);
+
+    // Role Routes
+    Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles.index');
+    Route::get('/roles/capabilities', [\App\Http\Controllers\RoleController::class, 'capabilities'])->name('roles.capabilities');
 
     // Add your other protected routes here...
 });

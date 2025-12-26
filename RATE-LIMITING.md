@@ -1,6 +1,6 @@
-# ⚡ Rate Limiting Guide
+# ⚡ Panduan Rate Limiting
 
-Rate limiting melindungi API Anda dari abuse, brute force attacks, dan excessive requests.
+Rate limiting melindungi API Anda dari penyalahgunaan (abuse), serangan brute force, dan request berlebihan.
 
 ## 📍 Konfigurasi
 
@@ -8,18 +8,18 @@ Rate limiting dikonfigurasi di: **`app/Providers/RateLimitServiceProvider.php`**
 
 ## 🎯 Default Rate Limits
 
-Starter pack sudah include rate limits berikut:
+Starter pack sudah termasuk rate limits berikut:
 
-| Rate Limiter     | Limit      | Kegunaan                          |
-| ---------------- | ---------- | --------------------------------- |
-| `api`            | 60/minute  | Global API requests               |
-| `login`          | 5/minute   | Login attempts (anti brute force) |
-| `register`       | 3/hour     | Registration (anti spam)          |
-| `password-reset` | 5/hour     | Password reset requests           |
-| `uploads`        | 10/minute  | File uploads                      |
-| `sensitive`      | 10/minute  | Delete, update password, dll      |
-| `public`         | 30/minute  | Public endpoints                  |
-| `premium`        | 200/minute | Premium users (optional)          |
+| Rate Limiter     | Limit     | Kegunaan                           |
+| :--------------- | :-------- | :--------------------------------- |
+| `api`            | 60/menit  | Request API global                 |
+| `login`          | 5/menit   | Percobaan login (anti brute force) |
+| `register`       | 3/jam     | Pendaftaran (anti spam)            |
+| `password-reset` | 5/jam     | Request reset password             |
+| `uploads`        | 10/menit  | Upload file                        |
+| `sensitive`      | 10/menit  | Hapus, update password, dll        |
+| `public`         | 30/menit  | Endpoint publik                    |
+| `premium`        | 200/menit | Pengguna premium (opsional)        |
 
 ## 🔧 Cara Menggunakan
 
@@ -82,7 +82,7 @@ public function boot(): void
             ->response(function (Request $request, array $headers) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Too many export requests.',
+                    'message' => 'Terlalu banyak request export.',
                     'retry_after' => $headers['Retry-After'] ?? 3600,
                 ], 429, $headers);
             });
@@ -96,17 +96,17 @@ public function boot(): void
 RateLimiter::for('api', function (Request $request) {
     $user = $request->user();
 
-    // Premium users get higher limit
+    // Pengguna premium dapat limit lebih tinggi
     if ($user && $user->hasRole('premium')) {
         return Limit::perMinute(200)->by($user->id);
     }
 
-    // Regular users
+    // Pengguna reguler
     if ($user) {
         return Limit::perMinute(60)->by($user->id);
     }
 
-    // Guest users (by IP)
+    // Pengguna tamu (berdasarkan IP)
     return Limit::perMinute(30)->by($request->ip());
 });
 ```
@@ -116,28 +116,28 @@ RateLimiter::for('api', function (Request $request) {
 ```php
 RateLimiter::for('api', function (Request $request) {
     return [
-        // 1000 requests per day
+        // 1000 requests per hari
         Limit::perDay(1000)->by($request->user()?->id),
 
-        // 60 requests per minute
+        // 60 requests per menit
         Limit::perMinute(60)->by($request->user()?->id),
     ];
 });
 ```
 
-### Rate Limit dengan Decay Time Custom
+### Rate Limit dengan Custom Decay Time
 
 ```php
 RateLimiter::for('api', function (Request $request) {
     return Limit::perMinute(60)
         ->by($request->user()?->id)
-        ->decayAfter(120); // Reset after 2 minutes instead of 1
+        ->decayAfter(120); // Reset setelah 2 menit, bukan 1
 });
 ```
 
-## 📊 Response Format
+## 📊 Format Response
 
-Ketika rate limit exceeded, API return:
+Ketika rate limit terlampaui (exceeded), API mengembalikan:
 
 ```json
 {
@@ -166,7 +166,7 @@ RateLimiter::for('api', function (Request $request) {
         ->response(function (Request $request, array $headers) {
             return response()->json([
                 'success' => false,
-                'message' => 'Whoa there! Slow down cowboy 🤠',
+                'message' => 'Sabar dulu boss! 🤠',
                 'retry_after' => $headers['Retry-After'] ?? 60,
                 'limit' => $headers['X-RateLimit-Limit'] ?? 60,
                 'remaining' => 0,
@@ -175,58 +175,58 @@ RateLimiter::for('api', function (Request $request) {
 });
 ```
 
-## 🔍 Real World Examples
+## 🔍 Contoh Dunia Nyata
 
-### Example 1: E-commerce API
+### Contoh 1: E-commerce API
 
 ```php
-// Product browsing (public, lebih generous)
+// Product browsing (publik, lebih longgar)
 RateLimiter::for('browse', function (Request $request) {
     return Limit::perMinute(100)->by($request->ip());
 });
 
-// Checkout (authenticated, lebih ketat)
+// Checkout (terautentikasi, lebih ketat)
 RateLimiter::for('checkout', function (Request $request) {
     return Limit::perMinute(10)->by($request->user()->id);
 });
 
-// Order creation (sangat ketat)
+// Pembuatan pesanan (sangat ketat)
 RateLimiter::for('create-order', function (Request $request) {
     return Limit::perMinute(3)->by($request->user()->id);
 });
 ```
 
-### Example 2: Social Media API
+### Contoh 2: Social Media API
 
 ```php
-// Read posts (generous)
+// Membaca postingan (longgar)
 RateLimiter::for('read-posts', function (Request $request) {
     return Limit::perMinute(200)->by($request->user()?->id);
 });
 
-// Create post (moderate)
+// Membuat postingan (moderat)
 RateLimiter::for('create-post', function (Request $request) {
     return Limit::perMinute(10)->by($request->user()->id);
 });
 
-// Send message (ketat untuk anti spam)
+// Mengirim pesan (ketat untuk anti spam)
 RateLimiter::for('send-message', function (Request $request) {
     return Limit::perMinute(20)->by($request->user()->id);
 });
 ```
 
-### Example 3: API dengan Tiered Limits
+### Contoh 3: API dengan Tiered Limits
 
 ```php
 RateLimiter::for('api', function (Request $request) {
     $user = $request->user();
 
     if (!$user) {
-        // Anonymous: 20/minute
+        // Anonim: 20/menit
         return Limit::perMinute(20)->by($request->ip());
     }
 
-    // Check subscription tier
+    // Cek tingkatan langganan
     if ($user->subscription_tier === 'enterprise') {
         return Limit::perMinute(500)->by($user->id);
     }
@@ -235,7 +235,7 @@ RateLimiter::for('api', function (Request $request) {
         return Limit::perMinute(200)->by($user->id);
     }
 
-    // Free tier: 60/minute
+    // Tingkat gratis: 60/menit
     return Limit::perMinute(60)->by($user->id);
 });
 ```
@@ -245,7 +245,7 @@ RateLimiter::for('api', function (Request $request) {
 ### Test dengan cURL
 
 ```bash
-# Send multiple requests quickly
+# Kirim banyak request secara cepat
 for i in {1..10}; do
   curl -X POST http://localhost:8000/api/login \
     -H "Content-Type: application/json" \
@@ -255,9 +255,9 @@ for i in {1..10}; do
 done
 ```
 
-Setelah 5 requests (login rate limit), akan dapat response 429.
+Setelah 5 request (login rate limit), akan dapat response 429.
 
-### Test dengan Script
+### Test dengan Script JS
 
 **test-rate-limit.js:**
 
@@ -288,14 +288,14 @@ async function testRateLimit() {
 testRateLimit();
 ```
 
-### Verify Headers
+### Verifikasi Headers
 
 ```bash
 curl -I http://localhost:8000/api/me \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-Look for headers:
+Cari headers berikut:
 
 ```http
 X-RateLimit-Limit: 60
@@ -304,7 +304,7 @@ X-RateLimit-Remaining: 59
 
 ## 🔓 Bypass Rate Limit (untuk Testing)
 
-### Disable sementara
+### Nonaktifkan sementara
 
 Di `.env`:
 
@@ -340,16 +340,16 @@ RateLimiter::for('api', function (Request $request) {
 });
 ```
 
-## 📈 Monitor Rate Limit Usage
+## 📈 Monitor Penggunaan Rate Limit
 
-### Log Rate Limit Hits
+### Log Hit Rate Limit
 
 ```php
 RateLimiter::for('api', function (Request $request) {
     return Limit::perMinute(60)
         ->by($request->user()?->id ?: $request->ip())
         ->response(function (Request $request, array $headers) {
-            // Log rate limit hit
+            // Log hit rate limit
             \Log::warning('Rate limit exceeded', [
                 'ip' => $request->ip(),
                 'user_id' => $request->user()?->id,
@@ -364,7 +364,7 @@ RateLimiter::for('api', function (Request $request) {
 });
 ```
 
-### Check Remaining Limit
+### Cek Sisa Limit (Remaining Limit)
 
 ```php
 use Illuminate\Support\Facades\RateLimiter;
@@ -388,69 +388,69 @@ public function checkLimit(Request $request)
 ### 1. Gunakan Rate Limit yang Berbeda untuk Endpoint yang Berbeda
 
 ```php
-// ❌ BAD: Satu rate limit untuk semua
+// ❌ BURUK: Satu rate limit untuk semua
 Route::middleware('throttle:60,1')->group(function () {
     Route::post('/login', ...);
     Route::get('/products', ...);
     Route::delete('/account', ...);
 });
 
-// ✅ GOOD: Rate limit sesuai sensitivity
+// ✅ BAIK: Rate limit sesuai sensitivitas
 Route::middleware('throttle:login')->post('/login', ...);
 Route::middleware('throttle:api')->get('/products', ...);
 Route::middleware('throttle:sensitive')->delete('/account', ...);
 ```
 
-### 2. Ketat untuk Write Operations, Generous untuk Read
+### 2. Ketat untuk Operasi Tulis, Longgar untuk Operasi Baca
 
 ```php
-// Read operations: 100/minute
+// Operasi baca: 100/menit
 RateLimiter::for('read', function (Request $request) {
     return Limit::perMinute(100);
 });
 
-// Write operations: 20/minute
+// Operasi tulis: 20/menit
 RateLimiter::for('write', function (Request $request) {
     return Limit::perMinute(20);
 });
 ```
 
-### 3. Track by User ID, Bukan IP (jika authenticated)
+### 3. Lacak berdasarkan User ID, Bukan IP (jika terautentikasi)
 
 ```php
-// ✅ GOOD: Track by user ID
+// ✅ BAIK: Lacak berdasarkan user ID
 return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
 
-// ❌ BAD: Track by IP saja (bisa di-bypass dengan VPN)
+// ❌ BURUK: Lacak berdasarkan IP saja (bisa di-bypass dengan VPN)
 return Limit::perMinute(60)->by($request->ip());
 ```
 
-### 4. Custom Message yang Informatif
+### 4. Pesan Kustom yang Informatif
 
 ```php
 ->response(function (Request $request, array $headers) {
     return response()->json([
         'success' => false,
-        'message' => 'You have exceeded the rate limit. Please wait ' .
-                     ($headers['Retry-After'] ?? 60) . ' seconds.',
+        'message' => 'Anda telah mencapai batas request. Mohon tunggu ' .
+                     ($headers['Retry-After'] ?? 60) . ' detik.',
         'retry_after' => $headers['Retry-After'] ?? 60,
         'limit' => $headers['X-RateLimit-Limit'] ?? 60,
     ], 429, $headers);
 });
 ```
 
-## 🔧 Configuration Options
+## 🔧 Opsi Konfigurasi
 
-| Method                 | Deskripsi                                |
-| ---------------------- | ---------------------------------------- |
-| `perMinute(60)`        | 60 requests per minute                   |
-| `perHour(1000)`        | 1000 requests per hour                   |
-| `perDay(10000)`        | 10000 requests per day                   |
-| `by($key)`             | Track by specific key (user ID, IP, etc) |
-| `response($callback)`  | Custom response saat limit exceeded      |
-| `decayAfter($seconds)` | Custom decay time                        |
+| Method                 | Deskripsi                                             |
+| :--------------------- | :---------------------------------------------------- |
+| `perMinute(60)`        | 60 request per menit                                  |
+| `perHour(1000)`        | 1000 request per jam                                  |
+| `perDay(10000)`        | 10000 request per hari                                |
+| `by($key)`             | Lacak berdasarkan key spesifik (ID pengguna, IP, dll) |
+| `response($callback)`  | Custom response saat limit terlampaui                 |
+| `decayAfter($seconds)` | Custom decay time (waktu reset)                       |
 
-## 📚 References
+## 📚 Referensi
 
 -   [Laravel Rate Limiting Docs](https://laravel.com/docs/routing#rate-limiting)
 -   [HTTP 429 Too Many Requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429)

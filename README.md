@@ -1,235 +1,135 @@
 # 🚀 Laravel API Starter Pack
 
-Starter pack Laravel API dengan Repository Pattern, Sanctum Authentication, Spatie Permission, dan fitur-fitur production-ready lainnya.
+Selamat datang di **Laravel API Starter Pack**!
+Ini adalah starter pack production-ready yang dirancang untuk mempercepat pengembangan API Laravel Anda dengan fitur-fitur modern dan best practices.
 
-## 📦 Tech Stack
-
--   **Laravel**: 12.x
--   **PHP**: 8.2+
--   **Authentication**: Laravel Sanctum
--   **Authorization**: Spatie Laravel Permission
--   **Architecture**: Repository Pattern
--   **UUID**: Primary Key
-
-## ✨ Features
-
-### 🖥️ Frontend (New)
-
--   ✅ **Vue.js 3 SPA** - Located in `frontend/frontend-starter`
--   ✅ **Pinia** - State Management
--   ✅ **TailwindCSS** - Styling framework
--   ✅ **Authentication** - Integrated with API v1
--   ✅ **Admin Panel** - User management interface
-
-### 🔐 Core Features
-
--   ✅ Authentication (Login, Register, Logout, Me)
--   ✅ Role & Permission Management (Spatie)
--   ✅ Repository Pattern
--   ✅ UUID as Primary Key
--   ✅ Soft Deletes
--   ✅ API Resources & Pagination
--   ✅ Form Request Validation
--   ✅ Standardized API Response
--   ✅ Search Functionality
--   ✅ CORS Configuration
-
-### 🚀 Advanced Features
-
--   ✅ **Rate Limiting** - 8 pre-configured limiters (anti brute-force, anti-spam)
--   ✅ **API Versioning** - Support `/api/v1`, `/api/v2`, etc
--   ✅ **Activity Logging** - Helper siap pakai `ActivityLogger`
--   ✅ **File Upload Handler** - Service `FileUploadService` aman dan mudah
--   ✅ **Email Queue** - Konfigurasi production-ready untuk email
--   ✅ **Email Verification** - Verify user email
--   ✅ **Password Reset** - Forgot password functionality
--   ✅ **Refresh Token** - JWT-style token refresh
+Dilengkapi dengan **Authentication** (Sanctum), **Authorization** (Spatie), **Repository Pattern**, dan sudah terintegrasi dengan **Frontend Vue.js + Tailwind**.
 
 ---
 
-## 📥 Panduan Instalasi (Installation)
+## 📚 Dokumentasi Lengkap
 
-### 1. Clone & Install
+Kami telah menyediakan dokumentasi detail untuk setiap aspek aplikasi ini:
+
+### 🎓 Memulai (Getting Started)
+
+-   **[Panduan Instalasi](INSTALLATION.md)** - Mulai dari sini! Cara install step-by-step.
+-   **[Panduan Pengembangan (Guide)](GUIDE.md)** - Tutorial cara membuat module/fitur baru (CRUD) dengan cepat.
+-   **[Quick Commands](QUICK-COMMANDS.md)** - Daftar perintah artisan penting yang sering dipakai.
+
+### 🔑 Fitur Utama (Core Features)
+
+-   **[Roles & Permissions](ROLES-AND-PERMISSIONS.md)** - Penjelasan lengkap sistem role (Super Admin, Admin, User).
+-   **[Authentication Flow](REFRESH-TOKEN.md)** - Penjelasan login, refresh token, dan keamanan.
+-   **[Middleware](MIDDLEWARE.md)** - Daftar middleware yang tersedia untuk proteksi route.
+-   **[API Versioning](API-VERSIONING.md)** - Cara mengelola versi API (v1, v2).
+
+### 🛠️ Fitur Tambahan (Utilities)
+
+-   **[File Upload](FILE-UPLOAD.md)** - Cara upload file dengan aman menggunakan Service.
+-   **[Activity Log](ACTIVITY-LOG.md)** - Cara mencatat aktivitas user.
+-   **[Rate Limiting](RATE-LIMITING.md)** - Proteksi API dari spam/brute-force.
+-   **[CORS](CORS.md)** - Konfigurasi Cross-Origin Resource Sharing.
+
+### 🆘 Bantuan (Support)
+
+-   **[Troubleshooting](TROUBLESHOOTING.md)** - Solusi untuk masalah umum yang sering ditemui.
+-   **[Struktur Project](STRUCTURE.md)** - Penjelasan struktur folder dan architecture.
+
+---
+
+## 📦 Tech Stack
+
+Aplikasi ini dibangun di atas teknologi modern yang stabil:
+
+-   **Backend**: Laravel 12.x, PHP 8.2+
+-   **Database**: MySQL 8.0+ / SQLite
+-   **Architecture**: Repository Pattern
+-   **Authentication**: Laravel Sanctum (Token based)
+-   **Authorization**: Spatie Laravel Permission
+-   **Frontend**: Vue.js 3, Pinia, TailwindCSS
+
+---
+
+## ✨ Fitur Sekilas
+
+### Core Features
+
+-   ✅ **Secure Auth**: Login, Register, Logout, Profile Management.
+-   ✅ **Role Management**: Super Admin, Admin, User (Extensible).
+-   ✅ **Repository Pattern**: Kode lebih rapi dan maintainable.
+-   ✅ **UUID**: Menggunakan UUID sebagai Primary Key untuk keamanan lebih baik.
+-   ✅ **Standardized Response**: Format JSON response yang konsisten (`success`, `message`, `data`).
+
+### Advanced Features
+
+-   ✅ **Rate Limiting**: 8 jenis limiter untuk berbagai use-case.
+-   ✅ **Activity Logger**: Helper untuk mencatat audit trail.
+-   ✅ **File Upload Service**: Standardisasi upload file ke storage.
+-   ✅ **Email Queue**: Konfigurasi job queue yang siap production.
+
+---
+
+## 🚀 Instalasi Cepat
+
+Untuk panduan detail, lihat **[INSTALLATION.md](INSTALLATION.md)**.
 
 ```bash
-# Clone project
-git clone https://github.com/username/laravel-api-starter.git
-cd laravel-api-starter
-
-# Install dependencies
+# 1. Clone & Install
+git clone https://github.com/username/project.git
 composer install
 
-# Copy environment file
+# 2. Setup Env
 cp .env.example .env
-
-# Generate application key
 php artisan key:generate
-```
 
-### 2. Setup Database
-
-Pastikan sudah membuat database, lalu update `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nama_database_anda
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 3. Setup Storage & Queue
-
-Penting untuk fitur upload file dan pengiriman email.
-
-```bash
-# Link storage folder (Wajib untuk File Upload)
-php artisan storage:link
-
-# Setup Queue (Untuk email performa tinggi)
-# Di .env ubah:
-QUEUE_CONNECTION=database
-```
-
-Jika menggunakan `QUEUE_CONNECTION=database`, jalankan:
-
-```bash
-php artisan queue:table
-php artisan migrate
-```
-
-### 4. Run Migrations & Seeders
-
-Jalankan perintah ini untuk membuat tabel dan data dummy awal (User Admin & Super Admin).
-
-```bash
+# 3. Setup Database (update .env first)
 php artisan migrate:fresh --seed
-```
 
-### 5. Jalankan Aplikasi
-
-```bash
+# 4. Run!
 php artisan serve
-# Aplikasi akan jalan di: http://localhost:8000
-# Base API URL: http://localhost:8000/api/v1
-```
-
-Jangan lupa jalankan queue worker di terminal terpisah jika menggunakan email/jobs:
-
-```bash
-php artisan queue:work
 ```
 
 ---
 
 ## 🔑 Default Credentials
 
--   **Super Admin**: `admin@example.com` / `password`
--   **Admin**: `user@example.com` / `password`
+Gunakan akun ini untuk login pertama kali:
+
+| Role            | Email               | Password   |
+| --------------- | ------------------- | ---------- |
+| **Super Admin** | `admin@example.com` | `password` |
+| **User Biasa**  | `user@example.com`  | `password` |
 
 ---
 
-## 📖 Panduan Penggunaan (Usage Guide)
-
-### 1. File Upload (New!)
-
-Gunakan `FileUploadService` untuk handle upload dengan aman.
-
-```php
-use App\Services\FileUploadService;
-
-public function updateAvatar(Request $request)
-{
-    if ($request->hasFile('avatar')) {
-        // Upload file ke folder 'avatars' di storage public
-        $path = FileUploadService::upload($request->file('avatar'), 'avatars');
-
-        // Simpan path ke database
-        $user->update(['avatar' => $path]);
-    }
-}
-```
-
-### 2. Activity Logging (New!)
-
-Catat aktivitas user dengan mudah menggunakan helper `ActivityLogger`.
-
-```php
-use App\Helpers\ActivityLogger;
-
-// Log aktivitas sederhana
-ActivityLogger::log('create', 'Membuat product baru');
-
-// Log dengan detail
-ActivityLogger::log(
-    'update',
-    'Update harga product',
-    'Product', // Model name
-    $product->id, // Model ID
-    ['old_price' => 5000, 'new_price' => 6000] // Properties tambahan
-);
-```
-
-### 3. Mengirim Email dengan Queue
-
-Gunakan class `App\Mail\WelcomeMail` yang sudah implement `ShouldQueue` agar aplikasi tidak loading lama saat kirim email.
-
-```php
-use App\Mail\WelcomeMail;
-use Illuminate\Support\Facades\Mail;
-
-// Email akan dikirim di background (via Queue)
-Mail::to($user->email)->send(new WelcomeMail($user));
-```
-
-Pastikan worker jalan: `php artisan queue:work`
-
-### 4. Menambah Module Baru (Contoh: Product)
-
-Ikuti langkah standar Repository Pattern:
-
-1.  **Model**: `php artisan make:model Product -m`
-2.  **Repository Interface**: Buat `App/Interfaces/ProductRepositoryInterface.php`
-3.  **Repository Implementation**: Buat `App/Repositories/ProductRepository.php`
-4.  **Service Provider**: Daftarkan di `RepositoryServiceProvider` binding-nya.
-5.  **Controller**: Inject Interface ke Constructor Controller.
-6.  **Route**: Daftarkan di `routes/v1.php`
-
----
-
-## 🏗️ Project Structure
+## 🏗️ Struktur Project
 
 ```
 app/
-├── Helpers/
-│   └── ActivityLogger.php   # Helper logging
-├── Services/
-│   └── FileUploadService.php # Service upload
+├── Helpers/            # Helper function (e.g. ActivityLogger)
 ├── Http/
-│   ├── Controllers/
-│   ├── Requests/
-│   └── Resources/
-├── Interfaces/             # Contracts
-├── Repositories/           # Business Logic
-├── Models/
-├── Traits/
-└── Providers/
+│   ├── Controllers/    # Handle request
+│   ├── Requests/       # Form Validations
+│   └── Resources/      # API Transformers (JSON Response)
+├── Interfaces/         # Contracts untuk Repository
+├── Models/             # Eloquent Models
+├── Repositories/       # Logic database query
+└── Services/           # Logic bisnis yang kompleks
 ```
 
-## 🎯 Best Practices
-
-1.  **Production Readiness**:
-    -   Selalu gunakan `QUEUE_CONNECTION=redis` atau `database` di production.
-    -   Jangan lupa `php artisan config:cache` dan `route:cache` saat deploy.
-2.  **Security**:
-    -   Gunakan `Sanctum` untuk token API.
-    -   Validasikan input user dengan `FormRequest`.
-
-## 📄 License
-
-MIT License
+Lihat detail di **[STRUCTURE.md](STRUCTURE.md)**.
 
 ---
 
-**Happy Coding! 🚀**
+## 🤝 Kontribusi
+
+Silakan fork repository ini dan buat Pull Request jika ingin berkontribusi. Pastikan coding style mengikuti standar PSR-12.
+
+## 📄 Lisensi
+
+MIT License. Bebas digunakan untuk project personal maupun komersial.
+
+---
+
+**Selamat Berkarya! 🚀**

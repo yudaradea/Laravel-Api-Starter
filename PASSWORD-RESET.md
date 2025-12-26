@@ -1,24 +1,32 @@
-# 🔑 Password Reset Functionality
+# 🔑 Reset Password (Lupa Password)
 
-Complete forgot password flow dengan email notification.
+Sistem pemulihan akun yang aman menggunakan email notification, built-in dari Laravel.
 
-## 🚀 Implementation Status
+---
 
-🚧 **Planned Features:**
+## 🚀 Status Fitur
 
--   Forgot password endpoint
--   Send reset link via email
--   Token validation
--   Reset password endpoint
--   Rate limiting for security
+Fitur ini menggunakan mekanisme bawaan Laravel `Illuminate\Foundation\Auth\ResetsPasswords`.
 
-## 📖 Planned Usage
+Fitur standar meliputi:
 
-### Request Password Reset
+-   Endpoint `forgot-password` untuk mengirim link reset.
+-   Endpoint `reset-password` untuk mengubah password dengan token.
+-   Rate limiting untuk mencegah spam.
 
-```http
-POST /api/password/forgot
+---
 
+## 📖 Cara Penggunaan
+
+### 1. Request Reset Link (Lupa Password)
+
+User mengirim email mereka untuk mendapatkan link reset.
+
+**Endpoint:** `POST /api/forgot-password`
+
+**Request Body:**
+
+```json
 {
     "email": "user@example.com"
 }
@@ -28,59 +36,42 @@ POST /api/password/forgot
 
 ```json
 {
-    "success": true,
-    "message": "Password reset link sent to your email"
+    "status": "We have emailed your password reset link."
 }
 ```
 
-### Reset Password
+### 2. Reset Password (Set Password Baru)
 
-```http
-POST /api/password/reset
+Setelah user mengklik link di email (yang mengarah ke frontend), frontend harus mengambil token dari URL dan mengirimkannya kembali ke backend.
 
+**Endpoint:** `POST /api/reset-password`
+
+**Request Body:**
+
+```json
 {
+    "token": "token-dari-url-email",
     "email": "user@example.com",
-    "token": "reset-token-from-email",
-    "password": "new-password",
-    "password_confirmation": "new-password"
+    "password": "password-baru",
+    "password_confirmation": "password-baru"
 }
 ```
 
-## 🔧 Endpoints
+**Response:**
 
-| Method | Endpoint                      | Description             |
-| ------ | ----------------------------- | ----------------------- |
-| POST   | `/api/password/forgot`        | Request reset link      |
-| POST   | `/api/password/reset`         | Reset password          |
-| GET    | `/api/password/reset/{token}` | Verify token (optional) |
-
-## 📧 Email Template
-
-```blade
-<!-- resources/views/emails/password-reset.blade.php -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Reset Password</title>
-</head>
-<body>
-    <h1>Reset Your Password</h1>
-    <p>Click the button below to reset your password:</p>
-    <a href="{{ $resetUrl }}">Reset Password</a>
-    <p>This link will expire in 60 minutes.</p>
-    <p>If you didn't request this, please ignore this email.</p>
-</body>
-</html>
+```json
+{
+    "status": "Your password has been reset."
+}
 ```
 
-## 🔒 Security Features
+---
 
-1. **Token Expiration** - Reset tokens expire after 60 minutes
-2. **Rate Limiting** - Max 5 requests per hour per IP
-3. **Single Use** - Tokens can only be used once
-4. **Email Verification** - Only send to registered emails
+## 🔧 Konfigurasi
 
-## 📊 Database
+### 1. Database
+
+Pastikan tabel `password_reset_tokens` sudah dibuat (biasanya sudah ada di migrasi default Laravel).
 
 ```php
 Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -90,22 +81,34 @@ Schema::create('password_reset_tokens', function (Blueprint $table) {
 });
 ```
 
-## 🎯 User Flow
+### 2. Expiry Time
 
-1. User clicks "Forgot Password"
-2. User enters email address
-3. System sends reset link to email
-4. User clicks link in email
-5. User enters new password
-6. Password updated, user can login
+Anda bisa mengatur berapa lama token valid di `config/auth.php`.
 
-## 🔧 Configuration
-
-```env
-# .env
-PASSWORD_RESET_EXPIRE=60  # Minutes
+```php
+'passwords' => [
+    'users' => [
+        'provider' => 'users',
+        'table' => 'password_reset_tokens',
+        'expire' => 60, // menit
+        'throttle' => 60,
+    ],
+],
 ```
 
 ---
 
-**Status:** Planning phase. Implementation coming in next update.
+## 🛡️ Fitur Keamanan
+
+1.  **Token Expiration**: Token otomatis kadaluarsa setelah 60 menit (configurable).
+2.  **Rate Limiting**: Mencegah spam request reset link.
+3.  **Single Use**: Token tidak bisa digunakan kembali setelah sukses reset.
+4.  **Email Verification**: Sistem memverifikasi kecocokan email dan token.
+
+---
+
+## 📝 Catatan Implementasi Frontend
+
+1.  Buat halaman "Lupa Password" -> Form input email.
+2.  Buat halaman "Reset Password" (misal: `/reset-password/{token}?email=...`) -> Form input password baru.
+3.  Pastikan URL di email mengarah ke halaman frontend yang benar. Anda mungkin perlu menyesuaikan `App\Notifications\ResetPassword` jika URL frontend berbeda dari default Laravel.

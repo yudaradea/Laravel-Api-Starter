@@ -12,7 +12,7 @@ export const useAuthStore = defineStore("auth", {
         isAuthenticated: (state) => !!state.token,
         isAdmin: (state) =>
             state.user?.roles?.some(
-                (role) => role.name === "super-admin" || role.name === "admin"
+                (role) => role.name === "admin" || role.name === "super-admin"
             ),
         isSuperAdmin: (state) =>
             state.user?.roles?.some((role) => role.name === "super-admin"),
@@ -111,6 +111,23 @@ export const useAuthStore = defineStore("auth", {
                 return {
                     success: false,
                     message: err.response?.data?.message || "Update failed",
+                    errors: err.response?.data?.errors,
+                };
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async changePassword(data) {
+            this.loading = true;
+            try {
+                const response = await api.post("/change-password", data);
+                return { success: true, message: response.data.message };
+            } catch (err) {
+                return {
+                    success: false,
+                    message:
+                        err.response?.data?.message || "Password change failed",
                     errors: err.response?.data?.errors,
                 };
             } finally {

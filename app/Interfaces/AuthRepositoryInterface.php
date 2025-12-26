@@ -33,4 +33,12 @@ interface AuthRepositoryInterface
      * @return \Illuminate\Http\JsonResponse
      */
     public function me();
+
+    /**
+     * Change user password
+     *
+     * @param array $data
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changePassword(array $data);
 }

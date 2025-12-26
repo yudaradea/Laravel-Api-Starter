@@ -19,6 +19,18 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
+            'profile' => $this->whenLoaded('profile', function () {
+                if (!$this->profile) {
+                    return null;
+                }
+                return [
+                    'phone' => $this->profile->phone,
+                    'address' => $this->profile->address,
+                    'bio' => $this->profile->bio,
+                    'avatar' => $this->profile->avatar,
+                    'avatar_url' => $this->profile->avatar_url,
+                ];
+            }),
             'roles' => $this->whenLoaded('roles', function () {
                 return $this->roles->map(function ($role) {
                     return [

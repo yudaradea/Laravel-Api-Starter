@@ -1,12 +1,12 @@
 # 📝 Activity Logging System
 
-Track dan audit semua aktivitas user dalam aplikasi Anda secara otomatis dan mudah.
+Fitur `Activity Logging` memungkinkan Anda untuk melacak dan mengaudit semua aktivitas pengguna dalam aplikasi secara otomatis. Fitur ini sangat berguna untuk debugging dan keamanan.
 
-## 📍 Database Schema
+## 📍 Struktur Database
 
 Table: `activity_logs`
 
-| Column      | Type      | Description                                |
+| Kolom       | Tipe      | Deskripsi                                  |
 | ----------- | --------- | ------------------------------------------ |
 | id          | uuid      | Primary key                                |
 | user_id     | uuid      | User yang melakukan aksi                   |
@@ -19,70 +19,126 @@ Table: `activity_logs`
 | user_agent  | string    | Browser/device info                        |
 | created_at  | timestamp | Waktu aktivitas                            |
 
-## 🚀 Implementation Status
+---
 
-✅ **Completed:**
+## 🚀 Status Implementasi
 
--   Table migration & Model
+✅ **Selesai:**
+
+-   Migration & Model Tabel
 -   `ActivityLogger` Helper class
--   Automatic IP & User Agent capture
+-   Tangkap IP & User Agent otomatis
 
-## 📖 Cara Penggunaan (Usage)
+---
+
+## 📖 Cara Penggunaan
 
 Gunakan helper class `ActivityLogger` di Controller, Service, atau Observer Anda.
 
-### 1. Simple Log
+### 1. Simple Log (Catatan Sederhana)
 
-Hanya mencatat aksi dan deskripsi.
+Hanya mencatat aksi dan deskripsi tanpa data model.
 
 ```php
 use App\Helpers\ActivityLogger;
 
 public function login() {
     // ... logic login ...
-    ActivityLogger::log('login', 'User logged in successfully');
+    ActivityLogger::log('login', 'User berhasil login');
 }
 ```
 
-### 2. Detailed Log with Model
+### 2. Detailed Log (Dengan Model)
 
-Mencatat perubahan pada Model tertentu.
+Mencatat perubahan pada Model tertentu, lengkap dengan data sebelum dan sesudahnya.
 
 ```php
 use App\Helpers\ActivityLogger;
 
 public function update(Request $request, $id) {
     $product = Product::find($id);
+    $oldData = $product->toArray(); // Simpan data lama
+
     $product->update($request->all());
 
     ActivityLogger::log(
-        'update', // Action
-        'Product updated: ' . $product->name, // Description
-        'Product', // Model Name
-        $product->id, // Model ID
-        ['old_price' => 5000, 'new_price' => 6000] // Properties (Optional)
+        'update',                   // Action
+        'Update produk: ' . $product->name, // Description
+        'Product',                  // Model Name
+        $product->id,               // Model ID
+        [
+            'old' => $oldData,
+            'new' => $product->toArray()
+        ]                           // Properties (Data Perubahan)
     );
 }
 ```
 
-## 🔍 Retrieve Logs
+### 3. Otomatisasi dengan Observer (Recommended)
+
+Agar tidak perlu menulis kode log di setiap controller, gunakan **Observer**.
+
+1.  Buat Observer:
+
+    ```bash
+    php artisan make:observer ProductObserver --model=Product
+    ```
+
+2.  Isi Observer:
+
+
+    ```php
+    public function updated(Product $product): void
+    {
+        ActivityLogger::log(
+            'update',
+            "Product {$product->name} updated",
+            'Product',
+            $product->id,
+            ['changes' => $product->getChanges()]
+        );
+    }
+    ```
+
+3.  Daftarkan di `AppServiceProvider`:
+
+    ```php
+    use App\Models\Product;
+    use App\Observers\ProductObserver;
+
+    public function boot(): void
+    {
+        Product::observe(ProductObserver::class);
+    }
+    ```
+
+---
+
+## 🔍 Melihat Log
 
 Anda bisa mengambil data log menggunakan Eloquent biasa.
 
 ```php
 use App\Models\ActivityLog;
 
-// Get logs for specific user
+// Ambil log user tertentu
 $logs = ActivityLog::where('user_id', $userId)->latest()->get();
 
-// Get logs for specific model
+// Ambil log model tertentu (misal: histori perubahan produk A)
 $productLogs = ActivityLog::where('model', 'Product')
     ->where('model_id', $productId)
     ->get();
 ```
 
-## 🎯 Use Cases
+---
 
-1. **Security Audit** - Melacak siapa yang login dan dari IP mana.
-2. **Debugging** - Mengetahui urutan kejadian sebelum error.
-3. **Accountability** - Mengetahui siapa yang mengubah/menghapus data penting.
+## 🎯 Kegunaan (Use Cases)
+
+1.  **Audit Keamanan**: Melacak siapa yang login dan dari IP mana.
+2.  **Debugging**: Mengetahui urutan kejadian sebelum error terjadi.
+3.  **Akuntabilitas**: Mengetahui siapa yang mengubah atau menghapus data penting.
+
+---
+
+**Tips:**
+Pastikan untuk membersihkan log yang sudah terlalu lama secara berkala agar database tidak penuh (misal: buat Scheduler untuk hapus log > 1 tahun).

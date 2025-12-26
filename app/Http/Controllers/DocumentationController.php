@@ -47,6 +47,12 @@ class DocumentationController extends Controller
                 'icon' => '🔍',
                 'category' => 'Getting Started'
             ],
+            'quick-commands' => [
+                'title' => 'Quick Commands',
+                'file' => 'QUICK-COMMANDS.md',
+                'icon' => '⌨️',
+                'category' => 'Getting Started'
+            ],
             'structure' => [
                 'title' => 'File Structure',
                 'file' => 'STRUCTURE.md',
@@ -57,6 +63,12 @@ class DocumentationController extends Controller
                 'title' => 'Middleware & Permissions',
                 'file' => 'MIDDLEWARE.md',
                 'icon' => '🔐',
+                'category' => 'Security'
+            ],
+            'roles-and-permissions' => [
+                'title' => 'Roles & Permissions',
+                'file' => 'ROLES-AND-PERMISSIONS.md',
+                'icon' => '👥',
                 'category' => 'Security'
             ],
             'rate-limiting' => [

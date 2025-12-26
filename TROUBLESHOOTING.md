@@ -1,31 +1,26 @@
-# 🔧 Troubleshooting Guide
+# 🔧 Panduan Troubleshooting (Masalah Umum)
 
-## ❌ Problem: Routes API tidak muncul di `php artisan route:list`
+Dokumen ini berisi kumpulan masalah yang sering ditemui saat instalasi atau pengembangan, beserta solusinya.
+
+---
+
+## ❌ Masalah 1: Routes API tidak muncul di `php artisan route:list`
 
 ### Gejala:
 
 -   Sudah copy file `routes/api.php`
 -   Sudah jalankan `php artisan install:api`
--   Tapi ketika cek `php artisan route:list`, routes API tidak ada
+-   Tapi ketika cek `php artisan route:list`, routes API tidak ada.
 
 ### ✅ Solusi:
 
-**Di Laravel 12, API routes tidak otomatis di-load!** Anda perlu register manual.
+**Di Laravel 12 (atau konfigurasi custom), API routes tidak otomatis di-load.** Anda perlu mendaftarkannya secara manual.
 
 #### Langkah 1: Update `bootstrap/app.php`
 
-Buka file `bootstrap/app.php` dan pastikan ada `api: __DIR__.'/../routes/api.php'`:
+Buka file `bootstrap/app.php` dan pastikan ada baris `api: __DIR__.'/../routes/api.php'`:
 
 ```php
-<?php
-
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
-use Spatie\Permission\Middleware\PermissionMiddleware;
-use Spatie\Permission\Middleware\RoleMiddleware;
-use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
-
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -33,53 +28,33 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        // Register Spatie Permission middleware aliases
-        $middleware->alias([
-            'role' => RoleMiddleware::class,
-            'permission' => PermissionMiddleware::class,
-            'role_or_permission' => RoleOrPermissionMiddleware::class,
-        ]);
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    // ...
 ```
 
 #### Langkah 2: Clear cache
 
 ```bash
 php artisan route:clear
-php artisan config:clear
-php artisan cache:clear
 ```
-
-#### Langkah 3: Cek lagi
-
-```bash
-php artisan route:list
-```
-
-Sekarang routes API Anda akan muncul dengan prefix `/api`!
 
 ---
 
-## ❌ Problem: RepositoryServiceProvider tidak terdaftar
+## ❌ Masalah 2: RepositoryServiceProvider Error
 
 ### Gejala:
 
 -   Error: `Target [App\Interfaces\AuthRepositoryInterface] is not instantiable`
--   Repository tidak bisa di-inject
+-   Repository tidak bisa di-inject ke Controller.
 
 ### ✅ Solusi:
 
+Anda belum mendaftarkan Service Provider untuk Repository.
+
 #### Langkah 1: Cek `bootstrap/providers.php`
 
-Pastikan file ini ada dan berisi:
+Pastikan file ini memuat `RepositoryServiceProvider`:
 
 ```php
-<?php
-
 return [
     App\Providers\AppServiceProvider::class,
     App\Providers\RepositoryServiceProvider::class,  // ← Harus ada!
@@ -90,25 +65,22 @@ return [
 
 ```bash
 php artisan config:clear
-php artisan cache:clear
 ```
 
 ---
 
-## ❌ Problem: Error "Class 'App\Traits\UUID' not found"
+## ❌ Masalah 3: Error "Class 'App\Traits\UUID' not found"
 
 ### Gejala:
 
--   Error saat run migration atau create model
--   UUID trait tidak ditemukan
+-   Error saat menjalankan migration atau membuat model.
+-   Pesan error menyebutkan trait UUID tidak ditemukan.
 
 ### ✅ Solusi:
 
-#### Langkah 1: Pastikan file ada
+Ini biasanya masalah autoloading composer.
 
-Cek apakah file `app/Traits/UUID.php` ada.
-
-#### Langkah 2: Regenerate autoload
+#### Langkah 1: Regenerate autoload
 
 ```bash
 composer dump-autoload
@@ -116,207 +88,57 @@ composer dump-autoload
 
 ---
 
-## ❌ Problem: Documentation routes showing 404 Not Found
+## ❌ Masalah 4: Halaman Dokumentasi 404 Not Found
 
 ### Gejala:
 
--   Semua route `/dokumentasi/{slug}` return 404
--   URL mengarah ke `/dokumentasi/complete-guide` tapi not found
+-   Akses ke `/dokumentasi` atau `/dokumentasi/{slug}` mengembalikan 404.
 
 ### ✅ Solusi:
 
-#### Step 1: Clear Cache
+#### Langkah 1: Clear Cache
 
 ```bash
 php artisan route:clear
-php artisan config:clear
-php artisan cache:clear
 php artisan view:clear
 ```
 
-#### Step 2: Check Route List
+#### Langkah 2: Cek keberadaan file
 
-```bash
-php artisan route:list | grep dokumentasi
-```
-
-**Harus muncul:**
-
-```plaintext
-GET       dokumentasi ........................ docs.index
-GET       dokumentasi/{slug} ................. docs.show
-```
-
-#### Step 3: Check File Exists
-
-```bash
-ls -la COMPLETE-GUIDE.md
-ls -la INSTALLATION.md
-# Semua .md files harus ada di root project
-```
-
-#### Step 4: Check Controller
-
-Pastikan `DocumentationController.php` ada di:
-
-```plaintext
-app/Http/Controllers/DocumentationController.php
-```
-
-#### Step 5: Check routes/web.php
-
-```php
-Route::prefix('dokumentasi')->group(function () {
-    Route::get('/', [DocumentationController::class, 'index'])->name('docs.index');
-    Route::get('/{slug}', [DocumentationController::class, 'show'])->name('docs.show');
-});
-```
-
-#### Step 6: Restart Server
-
-```bash
-# Stop server (Ctrl+C)
-php artisan serve
-```
-
-#### Step 7: Test Manually
-
-```bash
-# Test home
-curl http://localhost:8000/dokumentasi
-
-# Test specific doc
-curl http://localhost:8000/dokumentasi/complete-guide
-```
-
-### Debug Mode
-
-Jika masih error, enable debug mode di `.env`:
-
-```env
-APP_DEBUG=true
-```
-
-Check `storage/logs/laravel.log` untuk detail error.
+Pastikan file markdown (misal `README.md`) ada di root folder project.
 
 ---
 
-## ❌ Problem: "Non-static method Route::prefix() cannot be called statically"
-
-### Gejala:
-
--   Error di `bootstrap/app.php` saat menggunakan `Route::prefix()`
--   Error message: `Non-static method Illuminate\Routing\Route::prefix() cannot be called statically`
-
-### ✅ Solusi:
-
-Tambahkan import `Route` facade di top of file `bootstrap/app.php`:
-
-```php
-<?php
-
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Support\Facades\Route;  // ← PENTING! Tambahkan ini
-use Spatie\Permission\Middleware\PermissionMiddleware;
-use Spatie\Permission\Middleware\RoleMiddleware;
-use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
-
-return Application::configure(basePath: dirname(__DIR__))
-    ->withRouting(
-        // ...
-        then: function () {
-            Route::prefix('api/v1')  // ← Sekarang Route bisa dipakai
-                ->middleware('api')
-                ->group(base_path('routes/v1.php'));
-        },
-    )
-    // ...
-```
-
----
-
-## ❌ Problem: Error "Field 'id' doesn't have a default value" di personal_access_tokens
+## ❌ Masalah 5: Error "Field 'id' doesn't have a default value"
 
 ### Gejala:
 
 -   Error saat login: `SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value`
--   Error terjadi di table `personal_access_tokens`
+-   Terjadi di tabel `personal_access_tokens`.
 
 ### ✅ Solusi:
 
-Ini terjadi karena Sanctum belum tahu kalau kita pakai UUID untuk `personal_access_tokens`.
+Ini karena Sanctum default-nya menggunakan Auto Increment ID, sedangkan kita menggunakan UUID.
 
-#### Langkah 1: Pastikan AppServiceProvider sudah benar
+#### Langkah 1: Update `AppServiceProvider.php`
 
-File `app/Providers/AppServiceProvider.php`:
+Pastikan Anda memberitahu Sanctum untuk menggunakan model custom kita:
 
 ```php
-<?php
-
-namespace App\Providers;
-
-use Illuminate\Support\ServiceProvider;
-use Laravel\Sanctum\Sanctum;
-
-class AppServiceProvider extends ServiceProvider
+// app/Providers/AppServiceProvider.php
+public function boot(): void
 {
-    public function register(): void
-    {
-        //
-    }
-
-    public function boot(): void
-    {
-        // Use custom PersonalAccessToken model with UUID
-        Sanctum::usePersonalAccessTokenModel(\App\Models\PersonalAccessToken::class);
-    }
+    Sanctum::usePersonalAccessTokenModel(\App\Models\PersonalAccessToken::class);
 }
 ```
 
-#### Langkah 2: Pastikan PersonalAccessToken model menggunakan UUID trait
+#### Langkah 2: Cek Model `PersonalAccessToken`
 
-File `app/Models/PersonalAccessToken.php`:
-
-```php
-<?php
-
-namespace App\Models;
-
-use App\Traits\UUID;
-use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
-
-class PersonalAccessToken extends SanctumPersonalAccessToken
-{
-    use UUID;  // ← PENTING!
-
-    protected $table = 'personal_access_tokens';
-    public $incrementing = false;
-    protected $keyType = 'string';
-}
-```
-
-#### Langkah 3: Re-migrate
-
-```bash
-php artisan migrate:fresh --seed
-```
-
-#### Langkah 4: Clear cache
-
-```bash
-php artisan config:clear
-php artisan cache:clear
-```
-
-#### Langkah 5: Test login
-
-Sekarang login API akan berfungsi dengan UUID!
+Pastikan file `app/Models/PersonalAccessToken.php` menggunakan trait `UUID`.
 
 ---
 
-## ❌ Problem: Database connection refused
+## ❌ Masalah 6: Database Connection Refused
 
 ### Gejala:
 
@@ -324,282 +146,60 @@ Sekarang login API akan berfungsi dengan UUID!
 
 ### ✅ Solusi:
 
-#### Untuk SQLite:
+**Jika pakai SQLite:**
 
-1. Pastikan file database ada:
+1. Pastikan file database ada: `touch database/database.sqlite`
+2. Pastikan config `.env`: `DB_CONNECTION=sqlite` (dan hapus DB_HOST dll).
 
-```bash
-touch database/database.sqlite
-```
+**Jika pakai MySQL:**
 
-2. Update `.env`:
-
-```env
-DB_CONNECTION=sqlite
-# Comment atau hapus yang ini:
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=laravel
-# DB_USERNAME=root
-# DB_PASSWORD=
-```
-
-3. Clear config:
-
-```bash
-php artisan config:clear
-```
-
-#### Untuk MySQL:
-
-1. Pastikan MySQL berjalan:
-
-```bash
-# Linux/Mac
-sudo service mysql start
-
-# atau
-mysql.server start
-```
-
-2. Pastikan `.env` benar:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nama_database_anda
-DB_USERNAME=root
-DB_PASSWORD=password_anda
-```
-
-3. Create database:
-
-```sql
-CREATE DATABASE nama_database_anda;
-```
+1. Pastikan MySQL server running.
+2. Cek username/password di `.env`.
+3. Pastikan port (3306) tidak terblokir.
 
 ---
 
-## ❌ Problem: Token tidak valid / Unauthenticated
+## ❌ Masalah 7: Unauthenticated (Token Tidak Valid)
 
 ### Gejala:
 
--   Response: `{"message": "Unauthenticated."}`
--   Header authorization sudah benar
+-   Akses endpoint API selalu return 401 Unauthenticated.
 
 ### ✅ Solusi:
 
-#### Langkah 1: Cek format header
-
-Pastikan format header benar:
-
-```http
-Authorization: Bearer token_anda_disini
-```
-
-**BUKAN:**
-
--   `Bearer: token_anda_disini` ❌
--   `Token token_anda_disini` ❌
-
-#### Langkah 2: Cek config Sanctum
-
-File `config/sanctum.php`:
-
-```php
-'middleware' => [
-    'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
-    'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
-],
-```
-
-#### Langkah 3: Clear config
-
-```bash
-php artisan config:clear
-php artisan cache:clear
-```
+1.  **Cek Header**: Pastikan formatnya `Authorization: Bearer <token>`.
+2.  **Cek Environment**: Pastikan `SANCTUM_STATEFUL_DOMAINS` di `.env` sudah benar (biasanya biarkan default untuk API usage).
+3.  **Clear Config**: `php artisan config:clear`.
 
 ---
 
-## ❌ Problem: CORS Error
+## ❌ Masalah 8: CORS Error (Browser)
 
 ### Gejala:
 
--   Error di browser console: `Access to XMLHttpRequest has been blocked by CORS policy`
+-   Browser console merah: `Access to XMLHttpRequest has been blocked by CORS policy`.
 
 ### ✅ Solusi:
 
-#### Langkah 1: Install Laravel CORS (jika belum)
+1.  Buka `config/cors.php`.
+2.  Pastikan `allowed_origins` berisi domain frontend Anda (atau `['*']` untuk development).
+3.  Pastikan `paths` mencakup `api/*`.
 
-Laravel 12 sudah include CORS, tapi pastikan enabled.
+---
 
-#### Langkah 2: Update `config/cors.php`
+## 🔍 Tips Debugging Umum
+
+Jika Anda mengalami error yang tidak ada di daftar ini:
+
+1.  **Nyalakan Debug Mode**: Set `APP_DEBUG=true` di `.env`.
+2.  **Cek Log**: Buka file `storage/logs/laravel.log`. Biasanya error detail ada di baris paling bawah.
+3.  **Gunakan `dd()`**: Dump and Die variables di controller untuk memeriksa data.
 
 ```php
-return [
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
-    'allowed_methods' => ['*'],
-    'allowed_origins' => ['*'],  // Production: ganti dengan domain spesifik
-    'allowed_origins_patterns' => [],
-    'allowed_headers' => ['*'],
-    'exposed_headers' => [],
-    'max_age' => 0,
-    'supports_credentials' => false,
-];
-```
-
-#### Langkah 3: Jika masih error, tambahkan middleware
-
-Di `bootstrap/app.php`:
-
-```php
-->withMiddleware(function (Middleware $middleware) {
-    $middleware->api(prepend: [
-        \Illuminate\Http\Middleware\HandleCors::class,
-    ]);
-})
+dd($request->all()); // Cek data input
 ```
 
 ---
 
-## ❌ Problem: Validation Error Tidak Muncul
-
-### Gejala:
-
--   Form validation gagal tapi error message kosong
-
-### ✅ Solusi:
-
-#### Cek FormRequest
-
-Pastikan method `authorize()` return `true`:
-
-```php
-public function authorize(): bool
-{
-    return true;  // ← Harus true!
-}
-```
-
----
-
-## ❌ Problem: Role/Permission tidak bisa assign
-
-### Gejala:
-
--   Error: `Role does not exist`
--   Role sudah di-seed
-
-### ✅ Solusi:
-
-#### Langkah 1: Clear permission cache
-
-```bash
-php artisan permission:cache-reset
-```
-
-#### Langkah 2: Re-seed
-
-```bash
-php artisan db:seed --class=RoleSeeder
-```
-
-#### Langkah 3: Cek guard_name
-
-Pastikan guard_name di Role sesuai dengan User model guard (default: `web`).
-
----
-
-## ❌ Problem: Soft Delete tidak bekerja
-
-### Gejala:
-
--   Data benar-benar terhapus dari database
--   `deleted_at` tidak ter-set
-
-### ✅ Solusi:
-
-#### Pastikan Model menggunakan trait
-
-```php
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class YourModel extends Model
-{
-    use SoftDeletes;  // ← Harus ada!
-}
-```
-
-#### Pastikan migration punya column deleted_at
-
-```php
-$table->softDeletes();
-```
-
----
-
-## 🔍 Debug Tips
-
-### 1. Enable Debug Mode
-
-Di `.env`:
-
-```env
-APP_DEBUG=true
-LOG_LEVEL=debug
-```
-
-### 2. Check Logs
-
-```bash
-tail -f storage/logs/laravel.log
-```
-
-### 3. Clear Everything
-
-```bash
-php artisan optimize:clear
-```
-
-Ini akan clear:
-
--   Route cache
--   Config cache
--   View cache
--   Event cache
-
-### 4. Reinstall Dependencies
-
-```bash
-composer install
-composer dump-autoload
-```
-
-### 5. Check PHP Version
-
-```bash
-php -v
-```
-
-Pastikan PHP >= 8.2 untuk Laravel 12.
-
----
-
-## 📞 Masih Ada Masalah?
-
-1. Cek error di `storage/logs/laravel.log`
-2. Run `php artisan route:list` untuk lihat routes yang terdaftar
-3. Run `php artisan config:show` untuk lihat konfigurasi
-4. Pastikan semua file sudah di-copy dengan benar
-5. Cek permissions folder `storage/` dan `bootstrap/cache/`
-
-```bash
-chmod -R 775 storage
-chmod -R 775 bootstrap/cache
-```
-
----
-
-**Catatan:** Ini adalah masalah-masalah umum yang sering terjadi. Jika masalah Anda tidak ada di sini, cek dokumentasi Laravel resmi atau error message di log file.
+**Masih buntu?**
+Coba cari pesan error-nya di Google atau StackOverflow. Komunitas Laravel sangat besar dan kemungkinan besar orang lain pernah mengalami hal yang sama.

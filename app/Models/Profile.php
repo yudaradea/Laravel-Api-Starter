@@ -17,8 +17,15 @@ class Profile extends Model
         'address',
     ];
 
+    protected $appends = ['avatar_url'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar ? asset('storage/' . $this->avatar) : null;
     }
 }
