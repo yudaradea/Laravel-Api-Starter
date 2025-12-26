@@ -8,117 +8,197 @@ use App\Interfaces\AuthRepositoryInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Throwable;
 
 class AuthRepository implements AuthRepositoryInterface
 {
     /**
      * Login user
-     *
-     * @param array $credentials
-     * @return \Illuminate\Http\JsonResponse
      */
     public function login(array $credentials)
     {
-        if (!Auth::attempt($credentials)) {
-            return ResponseHelper::error('Invalid credentials', null, 401);
+        try {
+
+            if (!Auth::attempt($credentials)) {
+                return ResponseHelper::error(
+                    'Username atau password salah',
+                    'invalid_credentials',
+                    401
+                );
+            }
+
+            $user = Auth::user();
+            $user->load('profile', 'roles.permissions');
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return ResponseHelper::success(
+                [
+                    'access_token' => $token,
+                    'token_type'   => 'Bearer',
+                    'user'         => new UserResource($user),
+                ],
+                'Login successful',
+                200
+            );
+        } catch (Throwable $e) {
+            return ResponseHelper::error(
+                'Login failed',
+                $e->getMessage(),
+                500
+            );
         }
-
-        $user = Auth::user();
-        $user->load('profile', 'roles.permissions');
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return ResponseHelper::success([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => new UserResource($user),
-        ], 'Login successful');
     }
 
     /**
      * Register user
-     *
-     * @param array $data
-     * @return \Illuminate\Http\JsonResponse
      */
     public function register(array $data)
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        try {
 
-        // Assign default role
-        $user->assignRole('user');
+            $user = User::create([
+                'name'     => $data['name'],
+                'email'    => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
 
-        // Create empty profile
-        $user->profile()->create([
-            'phone' => null,
-            'address' => null,
-            'bio' => null,
-            'avatar' => null,
-        ]);
+            $user->assignRole('user');
 
-        // Load profile for response
-        $user->load('profile', 'roles.permissions');
+            $user->profile()->create([
+                'phone'   => null,
+                'address' => null,
+                'bio'     => null,
+                'avatar'  => null,
+            ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+            $user->load('profile', 'roles.permissions');
 
-        return ResponseHelper::success([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => new UserResource($user),
-        ], 'Registration successful', 201);
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return ResponseHelper::success(
+                [
+                    'access_token' => $token,
+                    'token_type'   => 'Bearer',
+                    'user'         => new UserResource($user),
+                ],
+                'Registration successful',
+                201
+            );
+        } catch (Throwable $e) {
+            return ResponseHelper::error(
+                'Registration failed',
+                $e->getMessage(),
+                500
+            );
+        }
     }
 
     /**
      * Logout user
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function logout()
     {
-        Auth::user()->currentAccessToken()->delete();
+        try {
 
-        return ResponseHelper::success(null, 'Logout successful');
+            $user = Auth::user();
+
+            if (!$user) {
+                return ResponseHelper::error(
+                    'Unauthenticated',
+                    null,
+                    401
+                );
+            }
+
+            $user->currentAccessToken()?->delete();
+
+            return ResponseHelper::success(
+                null,
+                'Logout successful',
+                200
+            );
+        } catch (Throwable $e) {
+            return ResponseHelper::error(
+                'Logout failed',
+                $e->getMessage(),
+                500
+            );
+        }
     }
 
     /**
      * Get authenticated user
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function me()
     {
-        $user = Auth::user();
-        $user->load('roles.permissions', 'profile');
+        try {
 
-        return ResponseHelper::success(
-            new UserResource($user),
-            'User retrieved successfully'
-        );
+            $user = Auth::user();
+
+            if (!$user) {
+                return ResponseHelper::error(
+                    'Unauthenticated',
+                    null,
+                    401
+                );
+            }
+
+            $user->load('roles.permissions', 'profile');
+
+            return ResponseHelper::success(
+                new UserResource($user),
+                'User retrieved successfully',
+                200
+            );
+        } catch (Throwable $e) {
+            return ResponseHelper::error(
+                'Failed to retrieve user',
+                $e->getMessage(),
+                500
+            );
+        }
     }
 
     /**
-     * Change user password
-     *
-     * @param array $data
-     * @return \Illuminate\Http\JsonResponse
+     * Change password
      */
     public function changePassword(array $data)
     {
-        $user = Auth::user();
+        try {
 
-        // Verify current password
-        if (!Hash::check($data['current_password'], $user->password)) {
-            return ResponseHelper::error('Current password is incorrect', null, 401);
+            $user = Auth::user();
+
+            if (!$user) {
+                return ResponseHelper::error(
+                    'Unauthenticated',
+                    null,
+                    401
+                );
+            }
+
+            if (!Hash::check($data['current_password'], $user->password)) {
+                return ResponseHelper::error(
+                    'Current password is incorrect',
+                    null,
+                    401
+                );
+            }
+
+            $user->password = Hash::make($data['password']);
+            $user->save();
+
+            return ResponseHelper::success(
+                null,
+                'Password changed successfully',
+                200
+            );
+        } catch (Throwable $e) {
+            return ResponseHelper::error(
+                'Failed to change password',
+                $e->getMessage(),
+                500
+            );
         }
-
-        // Update password
-        $user->password = Hash::make($data['password']);
-        $user->save();
-
-        return ResponseHelper::success(null, 'Password changed successfully');
     }
 }
