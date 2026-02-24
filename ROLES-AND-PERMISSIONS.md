@@ -351,7 +351,7 @@ const { can, hasRole } = usePermission();
 **Request:**
 
 ```http
-GET /api/v1/roles
+GET /api/roles
 Authorization: Bearer {token}
 ```
 
@@ -391,7 +391,7 @@ Authorization: Bearer {token}
 **Request:**
 
 ```http
-GET /api/v1/roles/capabilities
+GET /api/roles/capabilities
 Authorization: Bearer {token}
 ```
 
@@ -428,7 +428,7 @@ Authorization: Bearer {token}
 **Request:**
 
 ```http
-PUT /api/v1/users/{id}
+PUT /api/users/{id}
 Authorization: Bearer {token}
 Content-Type: application/json
 
@@ -957,11 +957,11 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
 **Available endpoints:**
 
--   `GET /api/v1/products` - List all products
--   `POST /api/v1/products` - Create product
--   `GET /api/v1/products/{id}` - Show product detail
--   `PUT /api/v1/products/{id}` - Update product
--   `DELETE /api/v1/products/{id}` - Delete product
+-   `GET /api/products` - List all products
+-   `POST /api/products` - Create product
+-   `GET /api/products/{id}` - Show product detail
+-   `PUT /api/products/{id}` - Update product
+-   `DELETE /api/products/{id}` - Delete product
 
 ---
 
@@ -973,10 +973,10 @@ Test with different roles:
 
 ```bash
 # Should succeed - Super Admin has all permissions
-curl -X GET http://localhost:8000/api/v1/products \
+curl -X GET http://localhost:8000/api/products \
   -H "Authorization: Bearer {super_admin_token}"
 
-curl -X DELETE http://localhost:8000/api/v1/products/1 \
+curl -X DELETE http://localhost:8000/api/products/1 \
   -H "Authorization: Bearer {super_admin_token}"
 ```
 
@@ -984,17 +984,17 @@ curl -X DELETE http://localhost:8000/api/v1/products/1 \
 
 ```bash
 # Should succeed - Editor can view products
-curl -X GET http://localhost:8000/api/v1/products \
+curl -X GET http://localhost:8000/api/products \
   -H "Authorization: Bearer {editor_token}"
 
 # Should succeed - Editor can edit products
-curl -X PUT http://localhost:8000/api/v1/products/1 \
+curl -X PUT http://localhost:8000/api/products/1 \
   -H "Authorization: Bearer {editor_token}" \
   -H "Content-Type: application/json" \
   -d '{"name": "Updated Product"}'
 
 # Should FAIL (403) - Editor cannot delete products
-curl -X DELETE http://localhost:8000/api/v1/products/1 \
+curl -X DELETE http://localhost:8000/api/products/1 \
   -H "Authorization: Bearer {editor_token}"
 ```
 
@@ -1002,11 +1002,11 @@ curl -X DELETE http://localhost:8000/api/v1/products/1 \
 
 ```bash
 # Should succeed - User can view products
-curl -X GET http://localhost:8000/api/v1/products \
+curl -X GET http://localhost:8000/api/products \
   -H "Authorization: Bearer {user_token}"
 
 # Should FAIL (403) - User cannot create products
-curl -X POST http://localhost:8000/api/v1/products \
+curl -X POST http://localhost:8000/api/products \
   -H "Authorization: Bearer {user_token}" \
   -H "Content-Type: application/json" \
   -d '{"name": "New Product", "price": 1000}'
@@ -1092,7 +1092,7 @@ const products = ref([]);
 
 const fetchProducts = async () => {
     try {
-        const response = await axios.get("/api/v1/products");
+        const response = await axios.get("/api/products");
         products.value = response.data.data;
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -1106,7 +1106,7 @@ const editProduct = (product) => {
 const deleteProduct = async (product) => {
     if (confirm(`Delete ${product.name}?`)) {
         try {
-            await axios.delete(`/api/v1/products/${product.id}`);
+            await axios.delete(`/api/products/${product.id}`);
             fetchProducts(); // Refresh list
         } catch (error) {
             console.error("Error deleting product:", error);

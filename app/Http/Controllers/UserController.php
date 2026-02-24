@@ -7,10 +7,22 @@ use App\Http\Requests\User\UserUpdatePasswordRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Interfaces\UserRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
     private UserRepositoryInterface $userRepository;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view users', only: ['index', 'getAllPaginated', 'show']),
+            new Middleware('permission:create users', only: ['store']),
+            new Middleware('permission:edit users', only: ['update', 'updatePassword']),
+            new Middleware('permission:delete users', only: ['destroy']),
+        ];
+    }
 
     public function __construct(UserRepositoryInterface $userRepository)
     {
@@ -24,7 +36,7 @@ class UserController extends Controller
     {
         $perPage = $request->query('per_page', 10);
         $search = $request->query('search', '');
-        
+
         return $this->userRepository->index($perPage, $search);
     }
 
@@ -35,7 +47,7 @@ class UserController extends Controller
     {
         $perPage = $request->query('per_page', 10);
         $search = $request->query('search', '');
-        
+
         return $this->userRepository->getAllPaginated($perPage, $search);
     }
 

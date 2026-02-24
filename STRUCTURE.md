@@ -163,7 +163,7 @@ Request → Route → Controller → Repository → Model → Database
 
 ### Example Flow: Get All Users
 
-1. **Request**: `GET /api/v1/user/all/paginated?per_page=10&search=admin`
+1. **Request**: `GET /api/user/all/paginated?per_page=10&search=admin`
 2. **Route**: `routes/v1.php` → `UserController@getAllPaginated`
 3. **Controller**: `UserController` → calls `UserRepository`
 4. **Repository**: `UserRepository@getAllPaginated`
@@ -223,20 +223,20 @@ Request → Route → Controller → Repository → Model → Database
 
 ### Authentication
 
--   `POST /api/v1/login` - Login
--   `POST /api/v1/register` - Register
--   `POST /api/v1/logout` - Logout (Auth Required)
--   `GET /api/v1/me` - Get current user (Auth Required)
+-   `POST /api/login` - Login
+-   `POST /api/register` - Register
+-   `POST /api/logout` - Logout (Auth Required)
+-   `GET /api/me` - Get current user (Auth Required)
 
 ### User Management (Auth Required)
 
--   `GET /api/v1/user` - Get all users
--   `GET /api/v1/user/all/paginated` - Get paginated users with search
--   `GET /api/v1/user/{id}` - Get user by ID
--   `POST /api/v1/user` - Create new user
--   `PUT /api/v1/user/{id}` - Update user
--   `PUT /api/v1/user/{id}/update-password` - Update user password
--   `DELETE /api/v1/user/{id}` - Delete user (soft delete)
+-   `GET /api/user` - Get all users
+-   `GET /api/user/all/paginated` - Get paginated users with search
+-   `GET /api/user/{id}` - Get user by ID
+-   `POST /api/user` - Create new user
+-   `PUT /api/user/{id}` - Update user
+-   `PUT /api/user/{id}/update-password` - Update user password
+-   `DELETE /api/user/{id}` - Delete user (soft delete)
 
 ## 🎨 Response Format
 

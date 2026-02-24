@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,12 +37,13 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     // Profile Routes
-    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show']);
-    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update']);
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/profile', [ProfileController::class, 'update']);
 
-    // Role Routes
-    Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])->name('roles.index');
+    // Role & Permission Routes
     Route::get('/roles/capabilities', [\App\Http\Controllers\RoleController::class, 'capabilities'])->name('roles.capabilities');
+    Route::apiResource('roles', \App\Http\Controllers\RoleController::class);
+    Route::apiResource('permissions', \App\Http\Controllers\PermissionController::class);
 
     // Add your other protected routes here...
 });

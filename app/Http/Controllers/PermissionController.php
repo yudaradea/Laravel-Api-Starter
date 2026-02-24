@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view permissions', only: ['index']),
+            new Middleware('permission:assign permissions', only: ['store', 'destroy']),
+        ];
+    }
+
     /**
      * Get all permissions
      *

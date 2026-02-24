@@ -13,28 +13,27 @@ Kami telah menyediakan dokumentasi detail untuk setiap aspek aplikasi ini:
 
 ### 🎓 Memulai (Getting Started)
 
--   **[Panduan Instalasi](INSTALLATION.md)** - Mulai dari sini! Cara install step-by-step.
--   **[Panduan Pengembangan (Guide)](GUIDE.md)** - Tutorial cara membuat module/fitur baru (CRUD) dengan cepat.
--   **[Quick Commands](QUICK-COMMANDS.md)** - Daftar perintah artisan penting yang sering dipakai.
+- **[Panduan Instalasi](INSTALLATION.md)** - Mulai dari sini! Cara install step-by-step.
+- **[Panduan Pengembangan (Guide)](GUIDE.md)** - Tutorial cara membuat module/fitur baru (CRUD) dengan cepat.
+- **[Quick Commands](QUICK-COMMANDS.md)** - Daftar perintah artisan penting yang sering dipakai.
 
 ### 🔑 Fitur Utama (Core Features)
 
--   **[Roles & Permissions](ROLES-AND-PERMISSIONS.md)** - Penjelasan lengkap sistem role (Super Admin, Admin, User).
--   **[Authentication Flow](REFRESH-TOKEN.md)** - Penjelasan login, refresh token, dan keamanan.
--   **[Middleware](MIDDLEWARE.md)** - Daftar middleware yang tersedia untuk proteksi route.
--   **[API Versioning](API-VERSIONING.md)** - Cara mengelola versi API (v1, v2).
+- **[Roles & Permissions](ROLES-AND-PERMISSIONS.md)** - Penjelasan lengkap sistem role (Super Admin, Admin, User).
+- **[Authentication Flow](REFRESH-TOKEN.md)** - Penjelasan login, refresh token, dan keamanan.
+- **[Middleware](MIDDLEWARE.md)** - Daftar middleware yang tersedia untuk proteksi route.
 
 ### 🛠️ Fitur Tambahan (Utilities)
 
--   **[File Upload](FILE-UPLOAD.md)** - Cara upload file dengan aman menggunakan Service.
--   **[Activity Log](ACTIVITY-LOG.md)** - Cara mencatat aktivitas user.
--   **[Rate Limiting](RATE-LIMITING.md)** - Proteksi API dari spam/brute-force.
--   **[CORS](CORS.md)** - Konfigurasi Cross-Origin Resource Sharing.
+- **[File Upload](FILE-UPLOAD.md)** - Cara upload file dengan aman menggunakan Service.
+- **[Activity Log](ACTIVITY-LOG.md)** - Cara mencatat aktivitas user.
+- **[Rate Limiting](RATE-LIMITING.md)** - Proteksi API dari spam/brute-force.
+- **[CORS](CORS.md)** - Konfigurasi Cross-Origin Resource Sharing.
 
 ### 🆘 Bantuan (Support)
 
--   **[Troubleshooting](TROUBLESHOOTING.md)** - Solusi untuk masalah umum yang sering ditemui.
--   **[Struktur Project](STRUCTURE.md)** - Penjelasan struktur folder dan architecture.
+- **[Troubleshooting](TROUBLESHOOTING.md)** - Solusi untuk masalah umum yang sering ditemui.
+- **[Struktur Project](STRUCTURE.md)** - Penjelasan struktur folder dan architecture.
 
 ---
 
@@ -42,12 +41,12 @@ Kami telah menyediakan dokumentasi detail untuk setiap aspek aplikasi ini:
 
 Aplikasi ini dibangun di atas teknologi modern yang stabil:
 
--   **Backend**: Laravel 12.x, PHP 8.2+
--   **Database**: MySQL 8.0+ / SQLite
--   **Architecture**: Repository Pattern
--   **Authentication**: Laravel Sanctum (Token based)
--   **Authorization**: Spatie Laravel Permission
--   **Frontend**: Vue.js 3, Pinia, TailwindCSS
+- **Backend**: Laravel 12.x, PHP 8.2+
+- **Database**: MySQL 8.0+ / SQLite
+- **Architecture**: Repository Pattern
+- **Authentication**: Laravel Sanctum (Token based)
+- **Authorization**: Spatie Laravel Permission
+- **Frontend**: Vue.js 3, Pinia, TailwindCSS
 
 ---
 
@@ -55,18 +54,18 @@ Aplikasi ini dibangun di atas teknologi modern yang stabil:
 
 ### Core Features
 
--   ✅ **Secure Auth**: Login, Register, Logout, Profile Management.
--   ✅ **Role Management**: Super Admin, Admin, User (Extensible).
--   ✅ **Repository Pattern**: Kode lebih rapi dan maintainable.
--   ✅ **UUID**: Menggunakan UUID sebagai Primary Key untuk keamanan lebih baik.
--   ✅ **Standardized Response**: Format JSON response yang konsisten (`success`, `message`, `data`).
+- ✅ **Secure Auth**: Login, Register, Logout, Profile Management.
+- ✅ **Role Management**: Super Admin, Admin, User (Extensible).
+- ✅ **Repository Pattern**: Kode lebih rapi dan maintainable.
+- ✅ **UUID**: Menggunakan UUID sebagai Primary Key untuk keamanan lebih baik.
+- ✅ **Standardized Response**: Format JSON response yang konsisten (`success`, `message`, `data`).
 
 ### Advanced Features
 
--   ✅ **Rate Limiting**: 8 jenis limiter untuk berbagai use-case.
--   ✅ **Activity Logger**: Helper untuk mencatat audit trail.
--   ✅ **File Upload Service**: Standardisasi upload file ke storage.
--   ✅ **Email Queue**: Konfigurasi job queue yang siap production.
+- ✅ **Rate Limiting**: 8 jenis limiter untuk berbagai use-case.
+- ✅ **Activity Logger**: Helper untuk mencatat audit trail.
+- ✅ **File Upload Service**: Standardisasi upload file ke storage.
+- ✅ **Email Queue**: Konfigurasi job queue yang siap production.
 
 ---
 

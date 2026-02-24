@@ -125,8 +125,8 @@ Kami telah menyediakan module `Profile` sebagai referensi implementasi file uplo
 
 **Endpoint:**
 
--   `POST /api/v1/profile` (Update profile & upload avatar)
--   `GET /api/v1/me` (Lihat profile & avatar URL)
+-   `POST /api/profile` (Update profile & upload avatar)
+-   `GET /api/me` (Lihat profile & avatar URL)
 
 Lihat kodenya di:
 

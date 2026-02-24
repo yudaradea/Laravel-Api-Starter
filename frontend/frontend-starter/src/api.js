@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://backend-api-starter.test/api/v1",
+    baseURL: "http://backend-api-starter.test/api",
     headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

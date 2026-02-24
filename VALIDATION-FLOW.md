@@ -35,7 +35,7 @@ Mari kita ikuti flow lengkap dari awal sampai akhir.
 User mengirim POST request:
 
 ```http
-POST /api/v1/user
+POST /api/user
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -65,7 +65,7 @@ Laravel routing mengarahkan ke `UserController::store()`
 
 ### **Step 3: Controller**
 
-**File:** `app/Http/Controllers/Api/V1/UserController.php`
+**File:** `app/Http/Controllers/api/UserController.php`
 
 ```php
 <?php
@@ -376,12 +376,12 @@ public function login(LoginStoreRequest $request)
 
 ```bash
 # Valid request
-curl -X POST http://localhost:8000/api/v1/login \
+curl -X POST http://localhost:8000/api/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@example.com","password":"password"}'
 
 # Invalid request (missing email)
-curl -X POST http://localhost:8000/api/v1/login \
+curl -X POST http://localhost:8000/api/login \
   -H "Content-Type: application/json" \
   -d '{"password":"password"}'
 
@@ -625,7 +625,7 @@ protected function prepareForValidation()
 ### **Test 1: Valid Request**
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/user \
+curl -X POST http://localhost:8000/api/user \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -649,7 +649,7 @@ curl -X POST http://localhost:8000/api/v1/user \
 ### **Test 2: Invalid - Empty Name**
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/user \
+curl -X POST http://localhost:8000/api/user \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -673,7 +673,7 @@ curl -X POST http://localhost:8000/api/v1/user \
 ### **Test 3: Invalid - Duplicate Email**
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/user \
+curl -X POST http://localhost:8000/api/user \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -697,7 +697,7 @@ curl -X POST http://localhost:8000/api/v1/user \
 ### **Test 4: Invalid - Short Password**
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/user \
+curl -X POST http://localhost:8000/api/user \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -721,7 +721,7 @@ curl -X POST http://localhost:8000/api/v1/user \
 ### **Test 5: Invalid - Multiple Errors**
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/user \
+curl -X POST http://localhost:8000/api/user \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{

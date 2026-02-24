@@ -147,7 +147,7 @@ Cek daftar route untuk memastikan API sudah terdaftar:
 php artisan route:list
 ```
 
-Anda harusnya melihat banyak route dengan prefix `api/v1/`.
+Anda harusnya melihat banyak route dengan prefix `api/`.
 
 ### Langkah 10: Jalankan Server
 
@@ -186,7 +186,7 @@ Setelah server berjalan, Anda bisa mengetesnya.
 ### Test Login (cURL)
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/login \
+curl -X POST http://localhost:8000/api/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@example.com",

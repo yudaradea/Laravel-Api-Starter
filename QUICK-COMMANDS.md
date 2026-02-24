@@ -87,15 +87,15 @@ Contoh testing endpoint dengan cURL.
 
 ```bash
 # Cek info user saat ini (termasuk roles)
-curl http://localhost:8000/api/v1/me \
+curl http://localhost:8000/api/me \
   -H "Authorization: Bearer TOKEN_ANDA"
 
 # Cek semua roles yang tersedia
-curl http://localhost:8000/api/v1/roles \
+curl http://localhost:8000/api/roles \
   -H "Authorization: Bearer TOKEN_ANDA"
 
 # Cek capabilities (permissions) per role
-curl http://localhost:8000/api/v1/roles/capabilities \
+curl http://localhost:8000/api/roles/capabilities \
   -H "Authorization: Bearer TOKEN_ANDA"
 ```
 
